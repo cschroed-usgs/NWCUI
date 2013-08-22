@@ -67,7 +67,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         // ////////////////////////////////////////////// FLOWLINES
         var flowlinesData = new OpenLayers.Layer.FlowlinesData(
                 "Flowline WMS (Data)",
-                CONFIG.endpoint.geoserver + 'wms'
+                CONFIG.endpoint.geoserver + 'gwc/service/wms'
                 );
         flowlinesData.id = 'nhd-flowlines-data-layer';
 
