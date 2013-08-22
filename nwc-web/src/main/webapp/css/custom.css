@@ -1,11 +1,7 @@
 /* put all your application wide styles here */
-
-#attribution {
-            width: 10em;
-            height: 4.4em;
-            position: relative;
-            top: 3em;
-            }
+#footer-contact-info{
+    display: none;
+}
 .generous_left_margin{
             margin-left: 20px;
             }

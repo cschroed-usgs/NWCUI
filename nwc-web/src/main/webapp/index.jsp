@@ -131,7 +131,7 @@
         <jsp:include page="template/USGSHeader.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
-            <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
+            <jsp:param name="site-title" value="National Water Census Portal" />
         </jsp:include>
         <div class="application-body">
         </div>
@@ -139,7 +139,6 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
             <jsp:param name="site-url" value= "<script type='text/javascript'>document.write(document.location.href);</script>" />
-            <jsp:param name="contact-info" value= "<a href='mailto:glri-database@usgs.gov?subject=GLRI AFINCH Mapper Comments' title='Contact Email'>GLRI Help</a>" />
         </jsp:include>
         <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
             <input id="filename_value" name="filename" type="text" value=""/>
