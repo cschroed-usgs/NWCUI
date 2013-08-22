@@ -458,30 +458,22 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('Removing previous data display window');
             dataDisplayWindow.destroy();
         }
-        var reachName = record.data[self.fieldNames.reachName] || "";
-        var reachID = record.data[self.fieldNames.reachComId] || "";
-        var title = reachName.length ? reachName + " - " : "";
-        title += reachID;
+        var huc12Name = record.data[self.fieldNames.huc12Name] || "";
+        var huc12Id = record.data[self.fieldNames.huc12Id] || "";
+        var title = huc12Name.length ? huc12Name + " - " : "";
+        title += huc12Id;
 
-        var gage = {
-            comId: record.get(self.fieldNames.gageComId),
-            link: record.get(self.fieldNames.link),
-            totdasqkm: record.get(self.fieldNames.gageTotdasqkm),
-            reachCode: record.get(self.fieldNames.reachCode),
-            name: record.get(self.fieldNames.gageName)
-        };
         //init a window that will be used as context for the callback
         var win = self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
-            title: title,
-            gage: gage
+            title: title
         });
 
         win.show();
         win.center();
         win.toFront();
 
-        self.sosUrlWithoutBase = 'out.nc?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
+        self.sosUrlWithoutBase = 'test/HUC12_daymet.nc?request=GetObservation&service=SOS&version=1.0.0&offering=010100020105&observedProperty=MEAN_prcp' + record.data[self.fieldNames.huc12Id];
         Ext.Ajax.request({
             url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
             success: self.sosCallback,
