@@ -91,7 +91,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 CONFIG.endpoint.geoserver + 'wms'
                 );
         gageData.id = 'gage-location-data';
-		
+
 		var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
 			CONFIG.endpoint.geoserver + 'gwc/service/wms',
 			{
@@ -102,7 +102,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 				opacity: 0.1,
 				isBaseLayer : false
 			});
-		
+
         mapLayers.push(hucLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(gageData);
@@ -117,10 +117,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.Navigation(),
                 new OpenLayers.Control.MousePosition({
                     prefix: 'POS: '
-                }),
-                new OpenLayers.Control.Attribution({
-                    template: '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution.nhd.link+ '">'+
-                    '<img id="attribution" src="' + CONFIG.attribution.nhd.logo + '"/></a>'
                 }),
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
@@ -169,7 +165,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
 
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
-                                
+
 // To be used in a future release
 //                                var getFeatureResponses = Object.extended();
 //                                if (!localStorage.getItem('glri-afinch')) {
@@ -178,8 +174,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                    }));
 //                                }
 //                                var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-afinch'));
-                                // Check to see if we have the lookup table for clip order values at the current clip value. If we do we don't need to 
-                                // make the call again. If we don't, make a call to get the values for the lookup table, create the lookup table 
+                                // Check to see if we have the lookup table for clip order values at the current clip value. If we do we don't need to
+                                // make the call again. If we don't, make a call to get the values for the lookup table, create the lookup table
 //                                if (!storageObject.lookupTable[panel.streamOrderClipValue - 1].length) {
 //                                    var needed = []
 //                                    for (var i = panel.streamOrderClipValue;i < storageObject.lookupTable.length + 1;i++) {
@@ -252,7 +248,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
                     panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
-                    
+
                 },
                 afterrender: self.showAttributionSplash
             }
@@ -282,24 +278,24 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(this.wmsGetFeatureInfoControl);
 },
     showAttributionSplash: function(){
-        var slogan = 'Data furnished by the EPA, NHDPlus, and USGS.';
+        var slogan = 'Data furnished by the EPA and USGS.';
         var attribPopupTimeout = 3000;
-        
+
         var makeAttribEntry = function(orgName){
             return '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution[orgName].link + '">' +
                     '<img src="' + CONFIG.attribution[orgName].logo +'"/>' +
                     '</a>';
         };
-        
+
         var html = '<div class="attribution_splash">';
-        ['epa', 'nhd', 'usgs'].each(function(orgName){
-           html+=makeAttribEntry(orgName); 
+        ['epa', 'usgs'].each(function(orgName){
+           html+=makeAttribEntry(orgName);
         });
-        html += '</div>' + 
+        html += '</div>' +
         '<div class="attribution_text">'+ slogan +'</div>';
 
         var msgWidth = 550;
-        
+
         Ext.Msg.show({
             title: 'Loading...',
             msg: html,
@@ -331,7 +327,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 //put stores into a title-to-store map for convenient access later
                 var tempStores = {};
                 statsStores.each(function(store){
-                   tempStores[store.title] = store; 
+                   tempStores[store.title] = store;
                 });
                 statsStores = tempStores;
 
@@ -344,12 +340,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
                 /**
                  * Declare some constants to be used in the table update:
-                 * 
-                 * - Variables with 'Index' in the name are indexing columns in the 
+                 *
+                 * - Variables with 'Index' in the name are indexing columns in the
                  * array of arrays that we will pass to Dygraphs
-                 * 
+                 *
                  * - Variables with 'ColumnName' in the name refer to field names in the StatStores
-                 * 
+                 *
                  */
 
                 var dateIndex = 0,
@@ -399,8 +395,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 var checkedItems = tbar.getSeriesTogglers();
                 checkedItems.each(function(checkedItem){
                     checkedItem.enable();
-                    checkedItem.fireEvent('checkchange', checkedItem, 
-                                            checkedItem.initialConfig.checked, 
+                    checkedItem.fireEvent('checkchange', checkedItem,
+                                            checkedItem.initialConfig.checked,
                                             win.graphPanel.graph,
                                             tbar.menu
                                         );
@@ -433,7 +429,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
             win.graphPanel.graph = AFINCH.ui.FlowDygraph(
-                win.graphPanel.getEl().dom, 
+                win.graphPanel.getEl().dom,
                 win.labelPanel.getEl().dom,
                 values);
 
@@ -453,14 +449,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 params: rParams,
                 scope: self,
                 callback: self.statsCallback
-            });        
+            });
             win.doLayout();
         }
     },
 
     /**
      * @param record - a reach's record.
-     * 
+     *
      */
     displayDataWindow: function(record){
         var self = this;
@@ -474,7 +470,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var reachID = record.data[self.fieldNames.reachComId] || "";
         var title = reachName.length ? reachName + " - " : "";
         title += reachID;
-        
+
         var gage = {
             comId: record.get(self.fieldNames.gageComId),
             link: record.get(self.fieldNames.link),
@@ -488,11 +484,11 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             title: title,
             gage: gage
         });
- 
+
         win.show();
         win.center();
         win.toFront();
-        
+
         self.sosUrlWithoutBase = 'out.nc?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
         Ext.Ajax.request({
             url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
@@ -513,7 +509,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
 
         var features = responseObject.features[0].features;
-        
+
         var layerFeatures = {
             'GageLoc': [],
             'NHDFlowline': []
@@ -535,13 +531,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 {name: self.fieldNames.gageId, type: 'long'},
                 {name: self.fieldNames.link, type: 'string'}
             ];
-            
+
         var nhdFlowLineFields = [
                 {name: self.fieldNames.reachName, type: 'string'},
                 {name: self.fieldNames.reachComId, type: 'long'},
                 {name: self.fieldNames.hasGage, type: 'boolean'}
             ].concat(gageLocFields);
-        
+
         gageLocFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.GageLoc,
             fields: gageLocFields,
@@ -552,12 +548,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             fields: nhdFlowLineFields,
             initDir: 0
         });
-                    
+
         var gageFieldsToAttachToReach = [
             self.fieldNames.gageTotdasqkm, self.fieldNames.gageComId, self.fieldNames.reachCode,
             self.fieldNames.gageName, self.fieldNames.gageId, self.fieldNames.link
         ];
-        
+
         if (nhdFlowLineFeatureStore.totalLength) {
             nhdFlowLineFeatureStore.each(function(flowLineFeature){
                 var gageLocForThisFlowLine = gageLocFeatureStore.query(self.fieldNames.reachCode, flowLineFeature.get(self.fieldNames.reachCode)).first();
@@ -578,7 +574,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             featureSelectionModel.on({
                 'rowselect' : {
                     fn : function(obj, rowIndex, record) { self.displayDataWindow(record); },
-                    delay: 100 
+                    delay: 100
                  }
              });
 
@@ -591,12 +587,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
                 columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
                 columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
-                
+
                 var customRenderers= {};
                 customRenderers[self.fieldNames.hasGage] = function(hasGage){
                     return hasGage ? '<div class="circle"></div>' : '&nbsp;';
                 };
-                
+
                 var featureGrid = new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-flowline',
                     store: nhdFlowLineFeatureStore,
@@ -612,7 +608,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     customRenderers: customRenderers,
                     columnConfig: columnConfig
                 });
-                
+
                 popup = new GeoExt.Popup({
                     id: 'identify-popup-window',
                     anchored: false,
@@ -625,7 +621,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     items: [featureGrid],
                     listeners: {
                         show: function() {
-                            // Remove the anchor element (setting anchored to 
+                            // Remove the anchor element (setting anchored to
                             // false does not do this for us. *Shaking fist @ GeoExt)
                             Ext.select('.gx-popup-anc').remove();
                             this.syncSize();
