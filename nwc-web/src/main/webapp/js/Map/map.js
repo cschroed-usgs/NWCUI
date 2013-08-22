@@ -286,7 +286,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         html += '</div>' +
         '<div class="attribution_text">'+ slogan +'</div>';
 
-        var msgWidth = 550;
+        var msgWidth = 400;
 
         Ext.Msg.show({
             title: 'Loading...',
