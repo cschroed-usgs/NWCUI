@@ -8,7 +8,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
     sosEndpointUrl: undefined,//defined in displayDataWindow
-    restrictedMapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
+    restrictedMapExtent: new OpenLayers.Bounds(-146.0698, 19.1647, -42.9301, 52.8949).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
     streamOrderClipValue: 0,
     streamOrderTable: new Array(21),
     streamOrderSlider: undefined,
