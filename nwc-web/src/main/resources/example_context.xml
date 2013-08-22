@@ -5,7 +5,7 @@
 <Environment name="nwcui.frontend.log4js.pattern.layout" type="java.lang.String" value="%rms - %-5p - %m%n" />
 <Environment name="nwcui.frontend.log4js.threshold" type="java.lang.String" value="info" />
 <!-- Endpoints -->
-<Environment name="nwcui.endpoint.geoserver" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/glri-geoserver/" />
+<Environment name="nwcui.endpoint.geoserver" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/geoserver/" />
 <Environment name="nwcui.endpoint.rwps" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/" />
 <Environment name="nwcui.endpoint.thredds" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/thredds/sos/watersmart/" />
 <!-- /NWCUI Mapper -->
