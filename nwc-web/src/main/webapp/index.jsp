@@ -25,8 +25,8 @@
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="GLRI AFINCH Mapper" />
-            <jsp:param name="title" value="GLRI AFINCH Mapper" />
+            <jsp:param name="shortName" value="NWC UI Mapper" />
+            <jsp:param name="title" value="National Water Census UI Mapper" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl, Jessica Lucido" />
             <jsp:param name="keywords" value="" />
@@ -74,10 +74,10 @@
             CONFIG.mapPanel = Object.extended();
 
             CONFIG.development = <%= development%>;
-            CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
-            CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
+            CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("nwcui.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
+            CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("nwcui.frontend.log4js.threshold", "info")%>';
 
-            CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
+            CONFIG.endpoint.geoserver = '<%= props.getProperty("nwcui.endpoint.geoserver", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
 
             //IE always taints the canvas with cross-origin images, even if their
@@ -87,9 +87,9 @@
                 CONFIG.endpoint.geoserver = CONFIG.endpoint.geoserverProxy;
             }
 
-            CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
+            CONFIG.endpoint.rwps = '<%= props.getProperty("nwcui.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
             CONFIG.endpoint.rwpsProxy = 'rwps/';
-            CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
+            CONFIG.endpoint.thredds = '<%= props.getProperty("nwcui.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
             CONFIG.attribution = {

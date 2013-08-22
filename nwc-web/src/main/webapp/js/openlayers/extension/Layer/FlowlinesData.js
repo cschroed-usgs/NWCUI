@@ -13,7 +13,7 @@ OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     initialize: function(name, url, params, options) {
         params = params || {};
         options = options || {};
-        params.layers = 'glri:NHDFlowline';
+        params.layers = 'NHDPlusFlowlines:PlusFlowlineVAA_NHDPlus-StreamOrder';
         params.styles = 'FlowlineStreamOrder';
         params.format = "image/png";
         params.tiled = true;
