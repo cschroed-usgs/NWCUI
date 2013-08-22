@@ -15,7 +15,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderLock: true,
     streamOrderClipValues: undefined,
     fieldNames:{
-        huc12Id : 'HUC12',
+        huc12Id : 'HUC_12',
         huc12Area: 'ACRES',
         huc12Name: 'HU_12_NAME'
     },
@@ -417,7 +417,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             if (0 === responseTxt.length){
                 responseTxt = $(response.responseXML).find('values').text();
             }
-            var numFieldsToLoadLater = 13;
+            var numFieldsToLoadLater = 0;
             var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
             win.graphPanel.graph = AFINCH.ui.FlowDygraph(
