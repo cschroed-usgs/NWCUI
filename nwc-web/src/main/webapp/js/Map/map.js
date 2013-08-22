@@ -91,7 +91,19 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 CONFIG.endpoint.geoserver + 'wms'
                 );
         gageData.id = 'gage-location-data';
-
+		
+		var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
+			CONFIG.endpoint.geoserver + 'gwc/service/wms',
+			{
+				layers: 'NHDPlusHUCs:NationalWBDSnapshot',
+				transparent: true,
+				styles: ['polygon']
+			}, {
+				opacity: 0.1,
+				isBaseLayer : false
+			});
+		
+        mapLayers.push(hucLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(gageData);
         mapLayers.push(flowlineRaster);
