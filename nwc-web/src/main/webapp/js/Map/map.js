@@ -15,15 +15,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderLock: true,
     streamOrderClipValues: undefined,
     fieldNames:{
-        reachCode : 'REACHCODE',
-        hasGage : 'hasGage',
-        gageId : 'SOURCE_FEA',
-        link : 'FEATUREDET',
-        gageName : 'STATION_NM',
-        gageTotdasqkm : 'TotDASqKM',
-        gageComId : 'ComID',
-        reachComId: 'COMID',
-        reachName: 'GNIS_NAME'
+        huc12Id : 'HUC12',
+        huc12Area: 'ACRES',
+        huc12Name: 'HU_12_NAME'
     },
     constructor: function(config) {
         var self = this;
@@ -262,9 +256,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                flowlinesData,
-                flowlineRaster,
-                gageData
+                hucLayer
             ],
             queryVisible: true,
             output: 'object',
@@ -510,63 +502,20 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         var features = responseObject.features[0].features;
 
-        var layerFeatures = {
-            'GageLoc': [],
-            'NHDFlowline': []
-        };
-        var gageLocFeatureStore, nhdFlowLineFeatureStore;
-        if (features.length) {
-            features.each(function(feature) {
-                if (feature.data['StreamOrde'] >= self.streamOrderClipValue) {
-                    layerFeatures[feature.gml.featureType].push(feature);
-                }
-            });
-        }
         //prepare field definitions for Ext Store contructors:
-        var gageLocFields = [
-                {name: self.fieldNames.gageName, type: 'string'},
-                {name: self.fieldNames.gageComId, type: 'int'},
-                {name: self.fieldNames.gageTotdasqkm, type: 'double'},
-                {name: self.fieldNames.reachCode, type: 'long'},
-                {name: self.fieldNames.gageId, type: 'long'},
-                {name: self.fieldNames.link, type: 'string'}
+        var hucFields = [
+                {name: self.fieldNames.huc12Id, type: 'string'},
+                {name: self.fieldNames.huc12Name, type: 'string'},
+                {name: self.fieldNames.huc12Area, type: 'long'}
             ];
 
-        var nhdFlowLineFields = [
-                {name: self.fieldNames.reachName, type: 'string'},
-                {name: self.fieldNames.reachComId, type: 'long'},
-                {name: self.fieldNames.hasGage, type: 'boolean'}
-            ].concat(gageLocFields);
 
-        gageLocFeatureStore = new GeoExt.data.FeatureStore({
-            features: layerFeatures.GageLoc,
-            fields: gageLocFields,
-            initDir: 0
-        });
-        nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
-            features: layerFeatures.NHDFlowline,
-            fields: nhdFlowLineFields,
+        huc12FeatureStore = new GeoExt.data.FeatureStore({
+            features: features,
+            fields: hucFields,
             initDir: 0
         });
 
-        var gageFieldsToAttachToReach = [
-            self.fieldNames.gageTotdasqkm, self.fieldNames.gageComId, self.fieldNames.reachCode,
-            self.fieldNames.gageName, self.fieldNames.gageId, self.fieldNames.link
-        ];
-
-        if (nhdFlowLineFeatureStore.totalLength) {
-            nhdFlowLineFeatureStore.each(function(flowLineFeature){
-                var gageLocForThisFlowLine = gageLocFeatureStore.query(self.fieldNames.reachCode, flowLineFeature.get(self.fieldNames.reachCode)).first();
-                if(gageLocForThisFlowLine){
-                    gageFieldsToAttachToReach.each(function(fieldName){
-                        flowLineFeature.set(fieldName, gageLocForThisFlowLine.get(fieldName));
-                    });
-                    //also manually attach this field:
-                    flowLineFeature.set(self.fieldNames.hasGage, true);
-                    //and remove all dirty markers
-                    flowLineFeature.modified = {};
-                }
-            });
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
                 singleSelect: true
@@ -578,24 +527,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                  }
              });
 
-            if (nhdFlowLineFeatureStore.totalLength) {
+            if (huc12FeatureStore.totalLength) {
                 var columnConfig ={};
-                //hide all of the gage fields
-                gageFieldsToAttachToReach.each(function(field){
-                    columnConfig[field] = {hidden: true}
-                });
-                columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
-                columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
-                columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
 
-                var customRenderers= {};
-                customRenderers[self.fieldNames.hasGage] = function(hasGage){
-                    return hasGage ? '<div class="circle"></div>' : '&nbsp;';
-                };
+                columnConfig[self.fieldNames.huc12Id] = {header: 'HUC12 Id', hidden: true};
+                columnConfig[self.fieldNames.huc12Name] = {header: 'HUC12 Name'};
+                columnConfig[self.fieldNames.huc12Area] = {header: 'Area (Acres)'};
 
                 var featureGrid = new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-flowline',
-                    store: nhdFlowLineFeatureStore,
+                    store: huc12FeatureStore,
                     region: 'center',
                     autoHeight: true,
                     deferRowRender: false,
@@ -605,7 +546,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         autoFill: true,
                         forceFit: true
                     },
-                    customRenderers: customRenderers,
                     columnConfig: columnConfig
                 });
 
@@ -617,7 +557,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     unpinnable: true,
                     minWidth: 200,
                     minHeight: 100,
-                    title: 'NHD Flowlines',
+                    title: 'HUC12 Selection',
                     items: [featureGrid],
                     listeners: {
                         show: function() {
@@ -633,8 +573,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
                 popup.show();
             }
-        }
-
     },
     getClipValueForZoom: function(zoom) {
         return this.streamOrderClipValues[zoom];
