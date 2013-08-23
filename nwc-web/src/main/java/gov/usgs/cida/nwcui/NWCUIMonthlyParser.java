@@ -1,4 +1,4 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.nwcui;
 
 import gov.usgs.cida.netcdf.dsg.RecordType;
 import gov.usgs.cida.watersmart.parse.StationLookup;
@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class AFINCHMonthlyParser extends SYEParser {
+public class NWCUIMonthlyParser extends SYEParser {
     
-    private static final Logger LOG = LoggerFactory.getLogger(AFINCHMonthlyParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NWCUIMonthlyParser.class);
     
     private static final Pattern headerLinePattern = Pattern.compile("^DateTime((?:,\\w+)+)$");
     private static final Pattern headerVariablePattern = Pattern.compile(",(\\w+)");
@@ -49,7 +49,7 @@ public class AFINCHMonthlyParser extends SYEParser {
         
     private String filename;
     
-    public AFINCHMonthlyParser(InputStream is, String filename, StationLookup lookerUpper) throws IOException, XMLStreamException {
+    public NWCUIMonthlyParser(InputStream is, String filename, StationLookup lookerUpper) throws IOException, XMLStreamException {
         super(is, filename, lookerUpper);
     }
 

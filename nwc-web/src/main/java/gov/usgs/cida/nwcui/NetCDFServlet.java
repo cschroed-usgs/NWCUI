@@ -1,4 +1,4 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.nwcui;
 
 import java.io.IOException;
 import java.io.PrintWriter;

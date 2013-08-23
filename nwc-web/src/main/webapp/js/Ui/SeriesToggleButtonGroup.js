@@ -1,6 +1,6 @@
-Ext.ns("AFINCH.ui");
+Ext.ns("NWCUI.ui");
 //@todo:  Holy Hardcoding Batman!
-AFINCH.ui.SeriesToggleButtonGroup= Ext.extend(Ext.ButtonGroup, {
+NWCUI.ui.SeriesToggleButtonGroup= Ext.extend(Ext.ButtonGroup, {
     constructor: function(config) {
          var toggleSeriesHandler = function(button, event){
           
@@ -85,7 +85,7 @@ AFINCH.ui.SeriesToggleButtonGroup= Ext.extend(Ext.ButtonGroup, {
             items : buttons
         }, config);
 
-        AFINCH.ui.SeriesToggleButtonGroup.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.SeriesToggleButtonGroup::constructor(): Construction complete.');
+        NWCUI.ui.SeriesToggleButtonGroup.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.SeriesToggleButtonGroup::constructor(): Construction complete.');
     }
 });

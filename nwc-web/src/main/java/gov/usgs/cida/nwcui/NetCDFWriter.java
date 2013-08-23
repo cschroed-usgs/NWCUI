@@ -1,4 +1,4 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.nwcui;
 
 import com.google.common.collect.Maps;
 import gov.usgs.cida.netcdf.dsg.Observation;
@@ -33,7 +33,7 @@ public class NetCDFWriter {
         StationTimeSeriesNetCDFFile nc = null;
 
         Map<String, String> globalAttrs = Maps.newLinkedHashMap();
-        globalAttrs.put("title", "AFINCH Monthly Flow");
+        globalAttrs.put("title", "NWCUI Monthly Flow");
         globalAttrs.put("summary", "Modeled flow for NHD reaches");
         globalAttrs.put("naming_authority", "gov.usgs.cida");
         globalAttrs.put("cdm_data_type", "Station");
@@ -54,7 +54,7 @@ public class NetCDFWriter {
             ZipEntry entry = entries.nextElement();
             if (!entry.isDirectory()) {
                 InputStream inputStream = zip.getInputStream(entry);
-                DSGParser dsgParse = new AFINCHMonthlyParser(inputStream,
+                DSGParser dsgParse = new NWCUIMonthlyParser(inputStream,
                                                              entry.getName(),
                                                              lookup);
                 RecordType meta = dsgParse.parse();

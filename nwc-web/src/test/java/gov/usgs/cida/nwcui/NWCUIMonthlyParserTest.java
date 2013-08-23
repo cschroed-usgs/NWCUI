@@ -1,6 +1,8 @@
 
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.nwcui;
 
+import gov.usgs.cida.nwcui.DummyStationLookup;
+import gov.usgs.cida.nwcui.NWCUIMonthlyParser;
 import gov.usgs.cida.netcdf.dsg.Observation;
 import gov.usgs.cida.watersmart.parse.StationLookup;
 import java.io.File;
@@ -19,17 +21,17 @@ import org.junit.Test;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class AFINCHMonthlyParserTest {
+public class NWCUIMonthlyParserTest {
 
-    public AFINCHMonthlyParserTest() {
+    public NWCUIMonthlyParserTest() {
     }
     
     private static File sampleFile = null;
     
     @BeforeClass
     public static void setupClass() throws IOException {
-        sampleFile = new File(AFINCHMonthlyParserTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/glri/afinch/9862573.txt")
+        sampleFile = new File(NWCUIMonthlyParserTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/nwcui/9862573.txt")
                 .getFile());
     }
 
@@ -42,7 +44,7 @@ public class AFINCHMonthlyParserTest {
                 "http://internal.cida.usgs.gov/lkm-geoserver/glri/ows",
                 "glri:nhd-flowline",
                 "COMID");
-        AFINCHMonthlyParser parser = new AFINCHMonthlyParser(is, sampleFile.getName(), lookup);
+        NWCUIMonthlyParser parser = new NWCUIMonthlyParser(is, sampleFile.getName(), lookup);
         parser.parse();
         int index = 0;
         float value = 0f;

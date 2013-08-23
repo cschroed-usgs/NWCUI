@@ -17,7 +17,7 @@ Ext.onReady(function() {
     initializeNotification();
     LOG.info('onReady.js::Notifications Initialized');
 
-    CONFIG.mapPanel = new AFINCH.MapPanel({
+    CONFIG.mapPanel = new NWCUI.MapPanel({
         region: 'center'
     });
 

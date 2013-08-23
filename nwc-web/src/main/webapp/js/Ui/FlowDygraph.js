@@ -1,10 +1,10 @@
-Ext.ns('AFINCH.ui');
+Ext.ns('NWCUI.ui');
 /**
  * @param graphElt - a DOM Node in which to render the Dygraph
  * @param legendElt - a DOM Node in which to render the legend
  * @param values - the array of arrays containing the data to graph
  */
-AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
+NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
     $([graphElt, legendElt]).addClass('generous_left_margin');
     
     var decileSuffix = "th % (cfs)";
@@ -96,9 +96,9 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
     Object.merge(opts, allSeriesOptions);
     var flowDygraph = new Dygraph(graphElt, values, opts);
     //attach some additional properties
-    flowDygraph.afinchFormatters = {};
-    flowDygraph.afinchFormatters.dateToStringWithoutDay = dateToStringWithoutDay;
-    flowDygraph.afinchFormatters.dateToOnlyMonthString = dateToStringMonthOnly;
+    flowDygraph.NWCUIFormatters = {};
+    flowDygraph.NWCUIFormatters.dateToStringWithoutDay = dateToStringWithoutDay;
+    flowDygraph.NWCUIFormatters.dateToOnlyMonthString = dateToStringMonthOnly;
     
     return flowDygraph;
 };
