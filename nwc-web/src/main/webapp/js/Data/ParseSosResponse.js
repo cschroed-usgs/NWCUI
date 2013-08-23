@@ -1,5 +1,6 @@
 Ext.ns('AFINCH.data');
 AFINCH.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
+
     responseTxt = responseTxt.slice(0, responseTxt.length-2);//kill terminal ' \n'
     var rows = responseTxt.split(' ');
     var rightPadding = [];
@@ -15,6 +16,9 @@ AFINCH.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
         dateStr = dateStr.replace(/-/g,'/');
         var date = new Date(dateStr);
         var flow = parseFloat(tokens[1]);
+        if(AFINCH.data.parseSosResponse.emptyValueThreshold <= flow){
+            flow = NaN;
+        }
         //Do not display leading NaNs in periods of record.
         //In other words:
         //Only add the parsed row to final rows if the current flow is a number
@@ -27,3 +31,4 @@ AFINCH.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
     });
     return finalRows;
 };
+AFINCH.data.parseSosResponse.emptyValueThreshold = 9.96921e+36;//any precip values above this amount will be considered NaN's

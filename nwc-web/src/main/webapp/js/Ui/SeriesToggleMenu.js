@@ -82,8 +82,8 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
                 dateWindow: originalDateWindow,
                  axes:{
                     x: {
-                        valueFormatter: graph.afinchFormatters.dateToStringWithoutDay,
-                        axisLabelFormatter: graph.afinchFormatters.dateToStringWithoutDay
+                        valueFormatter: graph.customFormatters.dateToStringWithoutDay,
+                        axisLabelFormatter: graph.customFormatters.dateToStringWithoutDay
                     }
                  }
             });

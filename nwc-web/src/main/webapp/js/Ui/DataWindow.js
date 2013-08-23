@@ -5,7 +5,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
         var self = this;
         var title = config.title || "";
         var width = config.width || 1000;
-        var height = config.height || 500;
+        var height = config.height || 400;
         
         self.toggleBar = new AFINCH.ui.SeriesToggleToolbar();
                //attach the contained components so that they can be easily referenced later
@@ -15,7 +15,8 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
         config = Ext.apply({
             width: width,
             height: height,
-            tbar: self.toggleBar,
+//@todo restore tbar when more series given
+//            tbar: self.toggleBar,
             title: title,
             collapsible: true,
             layout : 'hbox',

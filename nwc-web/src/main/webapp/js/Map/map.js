@@ -430,18 +430,19 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 values : values,
                 headers: win.graphPanel.graph.getLabels()
             };
+//@todo restore on rwps availability
             //kick off the next ajax call...
-            var rParams = {
-                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
-            };
-
-            var tempStatsStore = new AFINCH.data.StatsStore();
-
-            tempStatsStore.load({
-                params: rParams,
-                scope: self,
-                callback: self.statsCallback
-            });
+//            var rParams = {
+//                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
+//            };
+//
+//            var tempStatsStore = new AFINCH.data.StatsStore();
+//
+//            tempStatsStore.load({
+//                params: rParams,
+//                scope: self,
+//                callback: self.statsCallback
+//            });
             win.doLayout();
         }
     },
@@ -473,7 +474,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         win.center();
         win.toFront();
 
-        self.sosUrlWithoutBase = 'test/HUC12_daymet.nc?request=GetObservation&service=SOS&version=1.0.0&offering=010100020105&observedProperty=MEAN_prcp' + record.data[self.fieldNames.huc12Id];
+        self.sosUrlWithoutBase = 'test/HUC12_daymet.nc?request=GetObservation&service=SOS&version=1.0.0&observedProperty=MEAN_prcp&offering=' + record.data[self.fieldNames.huc12Id];
         Ext.Ajax.request({
             url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
             success: self.sosCallback,
