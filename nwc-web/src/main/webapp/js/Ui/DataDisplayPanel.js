@@ -1,16 +1,16 @@
-Ext.ns("AFINCH.ui");
+Ext.ns("NWCUI.ui");
 
-AFINCH.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
+NWCUI.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
     statsStore : undefined,
     constructor: function(config) {
         var statsStore = config.statsStore || [];
-        var gridPanel = new AFINCH.ui.StatsGridPanel({
+        var gridPanel = new NWCUI.ui.StatsGridPanel({
             region : 'center',
             statsStore : statsStore,
             height : 350,
             flex : 1
         });
-        var graphPanel = new AFINCH.ui.StatsGraphPanel({
+        var graphPanel = new NWCUI.ui.StatsGraphPanel({
             region : 'east',
             statsStore : statsStore,
             flex : 0
@@ -23,7 +23,7 @@ AFINCH.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
             pack : 'center'
         }, config);
 
-        AFINCH.ui.DataDisplayPanel.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.DataDisplayPanel::constructor(): Construction complete.');
+        NWCUI.ui.DataDisplayPanel.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.DataDisplayPanel::constructor(): Construction complete.');
     }
 });

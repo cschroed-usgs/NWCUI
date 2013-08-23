@@ -7,7 +7,7 @@ describe('ParseSosResponse.js', function(){
     
     //wrapper for tested function
     var parse = function(data){
-        return AFINCH.data.parseSosResponse(data, defaultNumFieldsLoadedLater);
+        return NWCUI.data.parseSosResponse(data, defaultNumFieldsLoadedLater);
     };
     
     var countNaNsInResults = function(results){
@@ -25,7 +25,7 @@ describe('ParseSosResponse.js', function(){
     }   
     
     it('should implement the parseSosResponse function', function(){
-       expect(AFINCH.data.parseSosResponse).toBeDefined();
+       expect(NWCUI.data.parseSosResponse).toBeDefined();
     });
     
     it('should not insert NaNs into the result when the incoming data has no NaNs', function(){

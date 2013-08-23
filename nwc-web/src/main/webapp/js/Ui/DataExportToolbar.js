@@ -1,6 +1,6 @@
-Ext.ns("AFINCH.ui");
+Ext.ns("NWCUI.ui");
 
-AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
+NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
     makeDataDefinition: function(key, value){
         return  '<p class="gage_KVP">'+
                     '<b>'+key+': </b>'+
@@ -81,8 +81,8 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             defaultExportName : ''
         }, config);
 
-        AFINCH.ui.DataExportToolbar.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.DataExportToolbar::constructor(): Construction complete.');
+        NWCUI.ui.DataExportToolbar.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.DataExportToolbar::constructor(): Construction complete.');
     }
 });
-Ext.reg('dataExportToolbar', AFINCH.ui.DataExportToolbar);
+Ext.reg('dataExportToolbar', NWCUI.ui.DataExportToolbar);

@@ -1,10 +1,10 @@
-Ext.ns('AFINCH.ui');
+Ext.ns('NWCUI.ui');
 /**
  * @param graphElt - a DOM Node in which to render the Dygraph
  * @param legendElt - a DOM Node in which to render the legend
  * @param values - the array of arrays containing the data to graph
  */
-AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
+NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
     var self = this;
     //make a map of programmatic identifier to user-facing text
     self.seriesNames = {};

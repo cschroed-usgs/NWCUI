@@ -1,5 +1,5 @@
-Ext.ns("AFINCH.ui");
-AFINCH.ui.SeriesToggleMenuMixin = function(){
+Ext.ns("NWCUI.ui");
+NWCUI.ui.SeriesToggleMenuMixin = function(){
    var self = this;
    
     //private properties:
@@ -105,8 +105,8 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
 
                     var axes = {
                         x: {
-                            valueFormatter: graph.afinchFormatters.dateToOnlyMonthString,
-                            axisLabelFormatter:  graph.afinchFormatters.dateToOnlyMonthString
+                            valueFormatter: graph.NWCUIFormatters.dateToOnlyMonthString,
+                            axisLabelFormatter:  graph.NWCUIFormatters.dateToOnlyMonthString
                         }
                     };
                     options.axes = axes;
@@ -198,8 +198,8 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
             items : checkItems
         }, config);
 
-        AFINCH.ui.SeriesToggleMenu.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.SeriesToggleMenu::constructor(): Construction complete.');
+        NWCUI.ui.SeriesToggleMenu.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.SeriesToggleMenu::constructor(): Construction complete.');
     };
 }
-AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, new AFINCH.ui.SeriesToggleMenuMixin());
+NWCUI.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, new NWCUI.ui.SeriesToggleMenuMixin());

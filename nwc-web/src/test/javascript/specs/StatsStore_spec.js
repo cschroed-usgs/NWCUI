@@ -53,11 +53,11 @@ beforeEach(function(){
 describe('StatsStore.js', function(){
 
     it('implements the memoized load function', function(){
-       expect(AFINCH.data.statsStoreLoad).toBeDefined();
+       expect(NWCUI.data.statsStoreLoad).toBeDefined();
     });
 
     it('overrides the generic Ext.data.Store functions', function(){
-        var ss = new AFINCH.data.StatsStore();
+        var ss = new NWCUI.data.StatsStore();
         var genericStore = new Ext.data.Store();
 
         var funcNames = ['constructor', 'load', 'rParse'];
@@ -68,8 +68,8 @@ describe('StatsStore.js', function(){
         });
 
     });
-    describe('AFINCH.data.StatsStore.rParse', function(){
-        var ss = new AFINCH.data.StatsStore();
+    describe('NWCUI.data.StatsStore.rParse', function(){
+        var ss = new NWCUI.data.StatsStore();
         var rParse = ss.rParse;
 
         /**
@@ -196,7 +196,7 @@ describe('StatsStore.js', function(){
 
 
 		it('should throw an error if the data cannot be parsed', function(){
-			var expectedError = (AFINCH.data.RParseError());
+			var expectedError = (NWCUI.data.RParseError());
 			expect(
 					//non-numeric values
 				function(){rParse(

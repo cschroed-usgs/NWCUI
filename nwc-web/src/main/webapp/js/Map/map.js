@@ -1,5 +1,5 @@
-Ext.ns("AFINCH");
-AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
+Ext.ns("NWCUI");
+NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     map: undefined,
     currentZoom: 0,
@@ -162,12 +162,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
 // To be used in a future release
 //                                var getFeatureResponses = Object.extended();
-//                                if (!localStorage.getItem('glri-afinch')) {
-//                                    localStorage.setItem('glri-afinch', Ext.util.JSON.encode({
+//                                if (!localStorage.getItem('glri-NWCUI')) {
+//                                    localStorage.setItem('glri-NWCUI', Ext.util.JSON.encode({
 //                                        lookupTable: Array.create([[], [], [], [], [], []])
 //                                    }));
 //                                }
-//                                var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-afinch'));
+//                                var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-NWCUI'));
                                 // Check to see if we have the lookup table for clip order values at the current clip value. If we do we don't need to
                                 // make the call again. If we don't, make a call to get the values for the lookup table, create the lookup table
 //                                if (!storageObject.lookupTable[panel.streamOrderClipValue - 1].length) {
@@ -210,7 +210,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                                },
 //                                                success: function(response, opts) {
 //                                                    this.streamLevel = Ext.util.JSON.decode(response.responseText);
-//                                                    var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-afinch'));
+//                                                    var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-NWCUI'));
 //
 //                                                    for (var i = 0; i < 6; i++) {
 //                                                        if (!storageObject.lookupTable[i].length) {
@@ -229,7 +229,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                                    }
 //
 //
-//                                                    localStorage.setItem('glri-afinch', Ext.util.JSON.encode(storageObject));
+//                                                    localStorage.setItem('glri-NWCUI', Ext.util.JSON.encode(storageObject));
 //                                                }
 //                                            });
 //                                        }
@@ -247,7 +247,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 afterrender: self.showAttributionSplash
             }
         }, config);
-        AFINCH.MapPanel.superclass.constructor.call(this, config);
+        NWCUI.MapPanel.superclass.constructor.call(this, config);
 
         LOG.info('map.js::constructor(): Construction complete.');
 
@@ -409,7 +409,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             response.responseXML = $.parseXML(response.responseText);
         }
         if(response.responseText.toLowerCase().indexOf('exception') !== -1){
-            AFINCH.ui.errorNotify("Error retrieving data from server. See browser logs for details.");
+            NWCUI.ui.errorNotify("Error retrieving data from server. See browser logs for details.");
             LOG.error(response.responseText);
         }
         else{
@@ -418,9 +418,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 responseTxt = $(response.responseXML).find('values').text();
             }
             var numFieldsToLoadLater = 0;
-            var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
+            var values = NWCUI.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-            win.graphPanel.graph = AFINCH.ui.FlowDygraph(
+            win.graphPanel.graph = NWCUI.ui.FlowDygraph(
                 win.graphPanel.getEl().dom,
                 win.labelPanel.getEl().dom,
                 values);
@@ -465,7 +465,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         title += huc12Id;
 
         //init a window that will be used as context for the callback
-        var win = self.dataWindow = new AFINCH.ui.DataWindow({
+        var win = self.dataWindow = new NWCUI.ui.DataWindow({
             id: 'data-display-window',
             title: title
         });

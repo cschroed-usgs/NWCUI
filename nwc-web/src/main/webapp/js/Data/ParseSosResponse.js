@@ -1,6 +1,5 @@
-Ext.ns('AFINCH.data');
-AFINCH.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
-
+Ext.ns('NWCUI.data');
+NWCUI.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
     responseTxt = responseTxt.slice(0, responseTxt.length-2);//kill terminal ' \n'
     var rows = responseTxt.split(' ');
     var rightPadding = [];
@@ -31,4 +30,4 @@ AFINCH.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
     });
     return finalRows;
 };
-AFINCH.data.parseSosResponse.emptyValueThreshold = 9.96921e+36;//any precip values above this amount will be considered NaN's
+NWCUI.data.parseSosResponse.emptyValueThreshold = 9.96921e+36;//any precip values above this amount will be considered NaN's
