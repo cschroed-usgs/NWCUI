@@ -96,15 +96,6 @@ NWCUI.ui.SeriesToggleMenuMixin = function(){
                     var lowestDate = graph.xAxisExtremes()[0]; //the first date in the data set
                     var endOfYear = lowestDate + oneYearInMs;
                     options.dateWindow = [lowestDate, endOfYear];
-
-                    var axes = {
-                        x: {
-                            valueFormatter: graph.NWCUIFormatters.dateToOnlyMonthString,
-                            axisLabelFormatter:  graph.NWCUIFormatters.dateToOnlyMonthString
-                        }
-                    };
-                    options.axes = axes;
-                    graph.updateOptions(options);
                     onlyMonthlySeriesSelected = true;
                 }
             }
