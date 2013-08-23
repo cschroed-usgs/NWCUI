@@ -96,9 +96,9 @@ NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
     Object.merge(opts, allSeriesOptions);
     var flowDygraph = new Dygraph(graphElt, values, opts);
     //attach some additional properties
-    flowDygraph.NWCUIFormatters = {};
-    flowDygraph.NWCUIFormatters.dateToStringWithoutDay = dateToStringWithoutDay;
-    flowDygraph.NWCUIFormatters.dateToOnlyMonthString = dateToStringMonthOnly;
+    flowDygraph.customFormatters = {};
+    flowDygraph.customFormatters.dateToStringWithoutDay = dateToStringWithoutDay;
+    flowDygraph.customFormatters.dateToOnlyMonthString = dateToStringMonthOnly;
     
     return flowDygraph;
 };

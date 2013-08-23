@@ -80,12 +80,6 @@ NWCUI.ui.SeriesToggleMenuMixin = function(){
         var restoreGraphOptions = function(){//restore the former min, max date
             graph.updateOptions({
                 dateWindow: originalDateWindow,
-                 axes:{
-                    x: {
-                        valueFormatter: graph.NWCUIFormatters.dateToStringWithoutDay,
-                        axisLabelFormatter: graph.NWCUIFormatters.dateToStringWithoutDay
-                    }
-                 }
             });
             onlyMonthlySeriesSelected = false;
         };
