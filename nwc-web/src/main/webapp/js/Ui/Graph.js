@@ -4,7 +4,7 @@ Ext.ns('NWCUI.ui');
  * @param legendElt - a DOM Node in which to render the legend
  * @param values - the array of arrays containing the data to graph
  */
-NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
+NWCUI.ui.Graph = function(graphElt, legendElt, values){
     var self = this;
     //make a map of programmatic identifier to user-facing text
     self.seriesNames = {};
@@ -52,7 +52,7 @@ NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
     Object.merge(allSeriesOptions, otherSeriesOptions);
     
     //functions to customize the display of dates on the Dygraph
-    //these will be attached as public properties of the FlowDygraph
+    //these will be attached as public properties of the Graph
     var dateToStringWithoutDay = function(ms){
         return new Date(ms).format('{Mon}. {yyyy}');
     };

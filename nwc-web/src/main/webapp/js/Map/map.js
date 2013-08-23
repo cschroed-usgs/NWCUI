@@ -420,7 +420,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var numFieldsToLoadLater = 0;
             var values = NWCUI.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-            win.graphPanel.graph = NWCUI.ui.FlowDygraph(
+            win.graphPanel.graph = NWCUI.ui.Graph(
                 win.graphPanel.getEl().dom,
                 win.labelPanel.getEl().dom,
                 values);

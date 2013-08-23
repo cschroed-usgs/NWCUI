@@ -14,17 +14,17 @@ NWCUI.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
         var dateStr = tokens[0].to(tokens[0].indexOf('T'));
         dateStr = dateStr.replace(/-/g,'/');
         var date = new Date(dateStr);
-        var flow = parseFloat(tokens[1]);
-        if(AFINCH.data.parseSosResponse.emptyValueThreshold <= flow){
-            flow = NaN;
+        var value = parseFloat(tokens[1]);
+        if(AFINCH.data.parseSosResponse.emptyValueThreshold <= value){
+            value = NaN;
         }
         //Do not display leading NaNs in periods of record.
         //In other words:
         //Only add the parsed row to final rows if the current flow is a number
         //or if the current flow is NaN, but a previously-parsed flow was a number
 
-        if(!isNaN(flow) || (isNaN(flow) && nonNanHasBeenFound)){//could be optimized to use implicit logic, but this way is more intelligible
-            finalRows.push([date, flow].concat(rightPadding));
+        if(!isNaN(value) || (isNaN(value) && nonNanHasBeenFound)){//could be optimized to use implicit logic, but this way is more intelligible
+            finalRows.push([date, value].concat(rightPadding));
             nonNanHasBeenFound = true;  //it is a number, 
         }
     });
