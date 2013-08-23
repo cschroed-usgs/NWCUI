@@ -17,14 +17,7 @@
         <war.dir>src/main/webapp</war.dir>
     </properties>
 	
-    <dependencies>
-        <!-- Required for some containers --> 
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.10.0</version>
-        </dependency>
-        
+    <dependencies>      
         <!-- Proxying -->
         <dependency>
             <groupId>gov.usgs.cida</groupId>
@@ -39,12 +32,6 @@
             </exclusions>
         </dependency>
       
-        <!-- Logging -->
-        <dependency>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-        </dependency>
-        
         <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -71,12 +58,7 @@
             <groupId>gov.usgs.cida</groupId>
             <artifactId>tomcat-filters</artifactId>
         </dependency>
-        <dependency>
-            <groupId>gov.usgs.cida.watersmart</groupId>
-            <artifactId>watersmart-parse</artifactId>
-            <type>jar</type>
-        </dependency>
-        
+
         <!-- JS Templates -->
         <dependency>
             <groupId>gov.usgs.cida.jslibs</groupId>
@@ -145,16 +127,6 @@
         </dependency>
         
         <!-- TESTING -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
