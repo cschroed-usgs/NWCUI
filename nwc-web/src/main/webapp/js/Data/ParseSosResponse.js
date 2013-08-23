@@ -20,8 +20,8 @@ NWCUI.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
         }
         //Do not display leading NaNs in periods of record.
         //In other words:
-        //Only add the parsed row to final rows if the current flow is a number
-        //or if the current flow is NaN, but a previously-parsed flow was a number
+        //Only add the parsed row to final rows if the current value is a number
+        //or if the current value is NaN, but a previously-parsed value was a number
 
         if(!isNaN(value) || (isNaN(value) && nonNanHasBeenFound)){//could be optimized to use implicit logic, but this way is more intelligible
             finalRows.push([date, value].concat(rightPadding));
