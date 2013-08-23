@@ -1,6 +1,6 @@
-Ext.ns('AFINCH.util');
+Ext.ns('NWCUI.util');
 
-AFINCH.util.makeLegalJavaScriptIdentifier = function(str){
+NWCUI.util.makeLegalJavaScriptIdentifier = function(str){
         var illegal = /[^0-9a-zA-Z_$]/;
             var safe = str.replace(illegal, '_');
                 return safe;
@@ -11,7 +11,7 @@ AFINCH.util.makeLegalJavaScriptIdentifier = function(str){
  //
  //resulting object format:
  //[{<your key>:<original data>}, {<your key>:<original data>}, ... ]
-AFINCH.util.wrapEachWithKey = function(array, key){
+NWCUI.util.wrapEachWithKey = function(array, key){
      return array.map(function(theVal){
          var obj = {};
          obj[key]=theVal;

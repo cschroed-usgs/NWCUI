@@ -1,5 +1,5 @@
-Ext.ns('AFINCH.data');
-AFINCH.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
+Ext.ns('NWCUI.data');
+NWCUI.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
     responseTxt = responseTxt.slice(0, responseTxt.length-2);//kill terminal ' \n'
     var rows = responseTxt.split(' ');
     var rightPadding = [];

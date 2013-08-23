@@ -1,16 +1,16 @@
-Ext.ns("AFINCH.ui");
+Ext.ns("NWCUI.ui");
 
-AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
+NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
     constructor: function(config) {
         var self = this;
         var title = config.title || "";
         var width = config.width || 1000;
         var height = config.height || 500;
         
-        self.toggleBar = new AFINCH.ui.SeriesToggleToolbar();
+        self.toggleBar = new NWCUI.ui.SeriesToggleToolbar();
                //attach the contained components so that they can be easily referenced later
-        self.graphPanel = new AFINCH.ui.StatsGraphPanel();
-        self.labelPanel = new AFINCH.ui.StatsLabelPanel();
+        self.graphPanel = new NWCUI.ui.StatsGraphPanel();
+        self.labelPanel = new NWCUI.ui.StatsLabelPanel();
         
         config = Ext.apply({
             width: width,
@@ -19,12 +19,12 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
             title: title,
             collapsible: true,
             layout : 'hbox',
-            bbar: new AFINCH.ui.DataExportToolbar({gage: config.gage}),
+            bbar: new NWCUI.ui.DataExportToolbar({gage: config.gage}),
             items: [self.graphPanel, self.labelPanel]
         }, config);
 
-        AFINCH.ui.DataWindow.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.DataWindow::constructor(): Construction complete.');
+        NWCUI.ui.DataWindow.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.DataWindow::constructor(): Construction complete.');
     }
 });
-Ext.reg('dataWindow', AFINCH.ui.DataWindow);
+Ext.reg('dataWindow', NWCUI.ui.DataWindow);

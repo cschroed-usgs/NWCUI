@@ -69,7 +69,7 @@
         <script type="text/javascript">
             OpenLayers.ProxyHost = null;
             var CONFIG = Object.extended();
-            var AFINCH = Object.extended();
+            var NWCUI = Object.extended();
             CONFIG.endpoint = Object.extended();
             CONFIG.mapPanel = Object.extended();
 

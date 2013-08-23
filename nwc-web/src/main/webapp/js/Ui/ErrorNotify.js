@@ -1,6 +1,6 @@
-Ext.ns('AFINCH.ui');
+Ext.ns('NWCUI.ui');
 
-AFINCH.ui.errorNotify = function(message){
+NWCUI.ui.errorNotify = function(message){
     if(undefined === message){
         message = "An Error occurred. See browser logs for details.";
     }

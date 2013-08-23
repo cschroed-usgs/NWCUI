@@ -1,4 +1,4 @@
-Ext.ns("AFINCH.data");
+Ext.ns("NWCUI.data");
 
 /**
      * @param options object similar to the load syntax for a generic store's load method
@@ -11,7 +11,7 @@ Ext.ns("AFINCH.data");
      * @note the function is memoized based on 'params'.
      * @see http://docs.sencha.com/ext-js/3-4/#!/api/Ext.data.Store-method-load
      */
-AFINCH.data.statsStoreLoad =  function(options){
+NWCUI.data.statsStoreLoad =  function(options){
     var self = this;
     var sosEndpointUrl = options.params.sosEndpointUrl,
     callback = options.callback,
@@ -28,8 +28,8 @@ AFINCH.data.statsStoreLoad =  function(options){
 
     //check to see if results are cached
     var stringifiedParams = JSON.stringify(options.params);
-    if(AFINCH.data.statsStoreLoad.cachedResults && stringifiedParams in AFINCH.data.statsStoreLoad.cachedResults){
-        callback.call(context, AFINCH.data.statsStoreLoad.cachedResults[stringifiedParams], true);
+    if(NWCUI.data.statsStoreLoad.cachedResults && stringifiedParams in NWCUI.data.statsStoreLoad.cachedResults){
+        callback.call(context, NWCUI.data.statsStoreLoad.cachedResults[stringifiedParams], true);
         return;
     }
 
@@ -81,7 +81,7 @@ AFINCH.data.statsStoreLoad =  function(options){
             }
 
             var statsStores = tablesData.map(function(tableData){
-                var fieldObjs = AFINCH.util.wrapEachWithKey(tableData.headers, 'name');
+                var fieldObjs = NWCUI.util.wrapEachWithKey(tableData.headers, 'name');
                 fieldObjs = fieldObjs.map(function(n){
                     n.type = 'float';
                     return n;
@@ -91,16 +91,16 @@ AFINCH.data.statsStoreLoad =  function(options){
                     Ext.data.Record.create(fieldObjs)
                     );
 
-                return new AFINCH.data.StatsStore({
+                return new NWCUI.data.StatsStore({
                     title : tableData.title,
                     reader: ar,
                     data: tableData.values
                 });
             });
-            if(!AFINCH.data.statsStoreLoad.cachedResults){
-                AFINCH.data.statsStoreLoad.cachedResults = {};
+            if(!NWCUI.data.statsStoreLoad.cachedResults){
+                NWCUI.data.statsStoreLoad.cachedResults = {};
             }
-            AFINCH.data.statsStoreLoad.cachedResults[stringifiedParams] = statsStores;
+            NWCUI.data.statsStoreLoad.cachedResults[stringifiedParams] = statsStores;
             callback.call(context, statsStores, true);
         };
     Ext.Ajax.request({
@@ -119,7 +119,7 @@ AFINCH.data.statsStoreLoad =  function(options){
         }
     });
 };
-AFINCH.data.RParseError = function(description){
+NWCUI.data.RParseError = function(description){
 	description = description ||
 			'The data was in an unexpected format and hence could not be parsed.';
 	return {
@@ -127,10 +127,10 @@ AFINCH.data.RParseError = function(description){
 		description : description
 	};
 };
-AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
+NWCUI.data.StatsStore = Ext.extend(Ext.data.Store, {
     constructor: function(config) {
-        AFINCH.data.StatsStore.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.data.StatsStore::constructor(): Construction complete.');
+        NWCUI.data.StatsStore.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.data.StatsStore::constructor(): Construction complete.');
     },
     /**
      * Parses the string result of an R WPS statistical calculation into objects
@@ -170,7 +170,7 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
 		var parserState = STATES.TABLE_NAME_SEARCH;
 
 		var throwParserError = function(){
-			throw AFINCH.data.RParseError();
+			throw NWCUI.data.RParseError();
 		};
         //tables will be objects with 'title', 'headers', and 'values' properties
         var tables = [];
@@ -215,7 +215,7 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
 								n = n.slice(0, -1);
 								//since header strings are used as js properties later on,
 								//make them legal
-								return AFINCH.util.makeLegalJavaScriptIdentifier(n);
+								return NWCUI.util.makeLegalJavaScriptIdentifier(n);
 							});
 							currentTable.headers = headerStrings;
 							currentTable.values = [];
@@ -234,7 +234,7 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
 		}
         return tables;
     },
-    load: AFINCH.data.statsStoreLoad,
+    load: NWCUI.data.statsStoreLoad,
    /**
     * Converts a storeinto a csv string
     *

@@ -1,6 +1,6 @@
-Ext.ns("AFINCH.ui");
+Ext.ns("NWCUI.ui");
 
-AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
+NWCUI.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
     initialData: undefined,
     graph: undefined,
     headers: undefined,
@@ -18,7 +18,7 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
             }
         }, config);
 
-        AFINCH.ui.StatsGraphPanel.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.StatsGraphPanel::constructor(): Construction complete.');
+        NWCUI.ui.StatsGraphPanel.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.StatsGraphPanel::constructor(): Construction complete.');
     }
 });

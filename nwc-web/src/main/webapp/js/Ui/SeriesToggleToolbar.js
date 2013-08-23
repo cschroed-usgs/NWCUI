@@ -1,12 +1,12 @@
-Ext.ns("AFINCH.ui");
-AFINCH.ui.SeriesToggleToolbar= Ext.extend(Ext.Toolbar, {
+Ext.ns("NWCUI.ui");
+NWCUI.ui.SeriesToggleToolbar= Ext.extend(Ext.Toolbar, {
     menu: undefined,
     getSeriesTogglers: function(){
         return this.menu.getSeriesTogglers();
     },
     constructor: function(config) {
         var self = this;
-        self.menu = new AFINCH.ui.SeriesToggleMenu();
+        self.menu = new NWCUI.ui.SeriesToggleMenu();
         config = Ext.apply({
             items: [
                 {text: 'Toggle Graph Series',
@@ -15,7 +15,7 @@ AFINCH.ui.SeriesToggleToolbar= Ext.extend(Ext.Toolbar, {
             ]
         }, config);
 
-        AFINCH.ui.SeriesToggleToolbar.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.SeriesToggleToolbar::constructor(): Construction complete.');
+        NWCUI.ui.SeriesToggleToolbar.superclass.constructor.call(this, config);
+        LOG.info('NWCUI.ui.SeriesToggleToolbar::constructor(): Construction complete.');
     }
 });
