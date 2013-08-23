@@ -79,13 +79,7 @@ NWCUI.ui.SeriesToggleMenuMixin = function(){
         //helper function to 'unyearify' the Dygraph's view
         var restoreGraphOptions = function(){//restore the former min, max date
             graph.updateOptions({
-                dateWindow: originalDateWindow,
-                 axes:{
-                    x: {
-                        valueFormatter: graph.customFormatters.dateToStringWithoutDay,
-                        axisLabelFormatter: graph.customFormatters.dateToStringWithoutDay
-                    }
-                 }
+                dateWindow: originalDateWindow
             });
             onlyMonthlySeriesSelected = false;
         };
