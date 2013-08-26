@@ -93,18 +93,14 @@
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
             CONFIG.attribution = {
-                nhd:{
-                    logo:'images/NHDPlus_logo.png',
-                    link: 'http://www.horizon-systems.com/nhdplus/'
-                },
                 usgs:{
                     logo: 'images/c_168_USGS.gif',
                     link: 'http://www.usgs.gov/'
                 },
-                epa: {
-                    logo: 'images/EPA_logo.png',
-                    link: 'http://www.epa.gov/'
-                }
+                watersmart:{
+                    logo: 'images/watersmart-graphic-small.jpg',
+                    link: 'http://www.usbr.gov/WaterSMART/'
+                },
             };
             CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
