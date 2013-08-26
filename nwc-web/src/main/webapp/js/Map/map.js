@@ -278,18 +278,18 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(this.wmsGetFeatureInfoControl);
 },
     showAttributionSplash: function(){
-        var slogan = 'Data furnished by the EPA and USGS.';
+        var slogan = 'Data furnished by the USGS and WaterSMART.';
         var attribPopupTimeout = 3000;
 
-        var makeAttribEntry = function(orgName){
-            return '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution[orgName].link + '">' +
-                    '<img src="' + CONFIG.attribution[orgName].logo +'"/>' +
+        var makeAttribEntry = function(attribution){
+            return '<a target="_blank" class="no_hover_change" href="' + attribution.link + '">' +
+                    '<img src="' + attribution.logo +'"/>' +
                     '</a>';
         };
 
         var html = '<div class="attribution_splash">';
-        ['epa', 'usgs'].each(function(orgName){
-           html+=makeAttribEntry(orgName);
+        Ext.iterate(CONFIG.attribution, function(orgId, attribution){
+           html+=makeAttribEntry(attribution);
         });
         html += '</div>' +
         '<div class="attribution_text">'+ slogan +'</div>';
