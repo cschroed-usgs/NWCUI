@@ -510,7 +510,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             if (huc12FeatureStore.totalLength) {
                 var columnConfig ={};
 
-                columnConfig[self.fieldNames.huc12Id] = {header: 'HUC12 Id', hidden: true};
+                columnConfig[self.fieldNames.huc12Id] = {header: 'HUC12'};
                 columnConfig[self.fieldNames.huc12Name] = {header: 'HUC12 Name'};
                 columnConfig[self.fieldNames.huc12Area] = {header: 'Area (Acres)'};
 
@@ -535,8 +535,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     layout: 'fit',
                     map: CONFIG.mapPanel.map,
                     unpinnable: true,
-                    minWidth: 200,
-                    minHeight: 100,
+                    minWidth: 400,
+                    minHeight: 200,
                     title: 'HUC12 Selection',
                     items: [featureGrid],
                     listeners: {
