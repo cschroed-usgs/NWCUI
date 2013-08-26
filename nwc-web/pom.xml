@@ -18,6 +18,13 @@
     </properties>
 	
     <dependencies>      
+        <!-- Required for some containers -->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+
         <!-- Proxying -->
         <dependency>
             <groupId>gov.usgs.cida</groupId>
