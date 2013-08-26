@@ -65,7 +65,6 @@ NWCUI.ui.Graph = function(graphElt, legendElt, values){
         labels: labels,
         colors: ['purple'],
         //@todo add stat series colors and restore decile colors:
-       /* 'black','black','black','black','black','black','black','black','black'],*/
         connectSeparatedPoints: true,
         showRangeSelector: true,
         highlightCircleSize: 0,
@@ -74,12 +73,6 @@ NWCUI.ui.Graph = function(graphElt, legendElt, values){
         labelsDiv: legendElt,
         labelsSeparateLines: true,
         legend: 'always'
-//        axes:{
-//            x: {
-//                valueFormatter: dateToStringWithoutDay,
-//                axisLabelFormatter: dateToStringWithoutDay
-//            }
-//        }
     };
         
     Object.merge(opts, allSeriesOptions);

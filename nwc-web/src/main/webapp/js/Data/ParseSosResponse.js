@@ -15,7 +15,7 @@ NWCUI.data.parseSosResponse = function(responseTxt, numFieldsLoadedLater){
         dateStr = dateStr.replace(/-/g,'/');
         var date = new Date(dateStr);
         var value = parseFloat(tokens[1]);
-        if(AFINCH.data.parseSosResponse.emptyValueThreshold <= value){
+        if(NWCUI.data.parseSosResponse.emptyValueThreshold <= value){
             value = NaN;
         }
         //Do not display leading NaNs in periods of record.

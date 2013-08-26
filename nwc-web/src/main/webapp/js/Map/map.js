@@ -430,19 +430,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 values : values,
                 headers: win.graphPanel.graph.getLabels()
             };
-//@todo restore on rwps availability
-            //kick off the next ajax call...
-//            var rParams = {
-//                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
-//            };
-//
-//            var tempStatsStore = new AFINCH.data.StatsStore();
-//
-//            tempStatsStore.load({
-//                params: rParams,
-//                scope: self,
-//                callback: self.statsCallback
-//            });
             win.doLayout();
         }
     },

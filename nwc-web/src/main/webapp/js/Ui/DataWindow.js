@@ -16,7 +16,6 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
             width: width,
             height: height,
 //@todo restore tbar when more series given
-//            tbar: self.toggleBar,
             title: title,
             collapsible: true,
             layout : 'hbox',
