@@ -15,15 +15,9 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderLock: true,
     streamOrderClipValues: undefined,
     fieldNames:{
-        reachCode : 'REACHCODE',
-        hasGage : 'hasGage',
-        gageId : 'SOURCE_FEA',
-        link : 'FEATUREDET',
-        gageName : 'STATION_NM',
-        gageTotdasqkm : 'TotDASqKM',
-        gageComId : 'ComID',
-        reachComId: 'COMID',
-        reachName: 'GNIS_NAME'
+        huc12Id : 'HUC_12',
+        huc12Area: 'ACRES',
+        huc12Name: 'HU_12_NAME'
     },
     constructor: function(config) {
         var self = this;
@@ -262,9 +256,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                flowlinesData,
-                flowlineRaster,
-                gageData
+                hucLayer
             ],
             queryVisible: true,
             output: 'object',
@@ -425,10 +417,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             if (0 === responseTxt.length){
                 responseTxt = $(response.responseXML).find('values').text();
             }
-            var numFieldsToLoadLater = 13;
+            var numFieldsToLoadLater = 0;
             var values = NWCUI.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-            win.graphPanel.graph = NWCUI.ui.FlowDygraph(
+            win.graphPanel.graph = NWCUI.ui.Graph(
                 win.graphPanel.getEl().dom,
                 win.labelPanel.getEl().dom,
                 values);
@@ -438,18 +430,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 values : values,
                 headers: win.graphPanel.graph.getLabels()
             };
-            //kick off the next ajax call...
-            var rParams = {
-                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
-            };
-
-            var tempStatsStore = new NWCUI.data.StatsStore();
-
-            tempStatsStore.load({
-                params: rParams,
-                scope: self,
-                callback: self.statsCallback
-            });
             win.doLayout();
         }
     },
@@ -466,30 +446,22 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('Removing previous data display window');
             dataDisplayWindow.destroy();
         }
-        var reachName = record.data[self.fieldNames.reachName] || "";
-        var reachID = record.data[self.fieldNames.reachComId] || "";
-        var title = reachName.length ? reachName + " - " : "";
-        title += reachID;
+        var huc12Name = record.data[self.fieldNames.huc12Name] || "";
+        var huc12Id = record.data[self.fieldNames.huc12Id] || "";
+        var title = huc12Name.length ? huc12Name + " - " : "";
+        title += huc12Id;
 
-        var gage = {
-            comId: record.get(self.fieldNames.gageComId),
-            link: record.get(self.fieldNames.link),
-            totdasqkm: record.get(self.fieldNames.gageTotdasqkm),
-            reachCode: record.get(self.fieldNames.reachCode),
-            name: record.get(self.fieldNames.gageName)
-        };
         //init a window that will be used as context for the callback
         var win = self.dataWindow = new NWCUI.ui.DataWindow({
             id: 'data-display-window',
-            title: title,
-            gage: gage
+            title: title
         });
 
         win.show();
         win.center();
         win.toFront();
 
-        self.sosUrlWithoutBase = 'out.nc?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
+        self.sosUrlWithoutBase = 'test/HUC12_daymet.nc?request=GetObservation&service=SOS&version=1.0.0&observedProperty=MEAN_prcp&offering=' + record.data[self.fieldNames.huc12Id];
         Ext.Ajax.request({
             url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
             success: self.sosCallback,
@@ -510,63 +482,20 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         var features = responseObject.features[0].features;
 
-        var layerFeatures = {
-            'GageLoc': [],
-            'NHDFlowline': []
-        };
-        var gageLocFeatureStore, nhdFlowLineFeatureStore;
-        if (features.length) {
-            features.each(function(feature) {
-                if (feature.data['StreamOrde'] >= self.streamOrderClipValue) {
-                    layerFeatures[feature.gml.featureType].push(feature);
-                }
-            });
-        }
         //prepare field definitions for Ext Store contructors:
-        var gageLocFields = [
-                {name: self.fieldNames.gageName, type: 'string'},
-                {name: self.fieldNames.gageComId, type: 'int'},
-                {name: self.fieldNames.gageTotdasqkm, type: 'double'},
-                {name: self.fieldNames.reachCode, type: 'long'},
-                {name: self.fieldNames.gageId, type: 'long'},
-                {name: self.fieldNames.link, type: 'string'}
+        var hucFields = [
+                {name: self.fieldNames.huc12Id, type: 'string'},
+                {name: self.fieldNames.huc12Name, type: 'string'},
+                {name: self.fieldNames.huc12Area, type: 'long'}
             ];
 
-        var nhdFlowLineFields = [
-                {name: self.fieldNames.reachName, type: 'string'},
-                {name: self.fieldNames.reachComId, type: 'long'},
-                {name: self.fieldNames.hasGage, type: 'boolean'}
-            ].concat(gageLocFields);
 
-        gageLocFeatureStore = new GeoExt.data.FeatureStore({
-            features: layerFeatures.GageLoc,
-            fields: gageLocFields,
-            initDir: 0
-        });
-        nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
-            features: layerFeatures.NHDFlowline,
-            fields: nhdFlowLineFields,
+        huc12FeatureStore = new GeoExt.data.FeatureStore({
+            features: features,
+            fields: hucFields,
             initDir: 0
         });
 
-        var gageFieldsToAttachToReach = [
-            self.fieldNames.gageTotdasqkm, self.fieldNames.gageComId, self.fieldNames.reachCode,
-            self.fieldNames.gageName, self.fieldNames.gageId, self.fieldNames.link
-        ];
-
-        if (nhdFlowLineFeatureStore.totalLength) {
-            nhdFlowLineFeatureStore.each(function(flowLineFeature){
-                var gageLocForThisFlowLine = gageLocFeatureStore.query(self.fieldNames.reachCode, flowLineFeature.get(self.fieldNames.reachCode)).first();
-                if(gageLocForThisFlowLine){
-                    gageFieldsToAttachToReach.each(function(fieldName){
-                        flowLineFeature.set(fieldName, gageLocForThisFlowLine.get(fieldName));
-                    });
-                    //also manually attach this field:
-                    flowLineFeature.set(self.fieldNames.hasGage, true);
-                    //and remove all dirty markers
-                    flowLineFeature.modified = {};
-                }
-            });
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
                 singleSelect: true
@@ -578,24 +507,16 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                  }
              });
 
-            if (nhdFlowLineFeatureStore.totalLength) {
+            if (huc12FeatureStore.totalLength) {
                 var columnConfig ={};
-                //hide all of the gage fields
-                gageFieldsToAttachToReach.each(function(field){
-                    columnConfig[field] = {hidden: true}
-                });
-                columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
-                columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
-                columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
 
-                var customRenderers= {};
-                customRenderers[self.fieldNames.hasGage] = function(hasGage){
-                    return hasGage ? '<div class="circle"></div>' : '&nbsp;';
-                };
+                columnConfig[self.fieldNames.huc12Id] = {header: 'HUC12 Id', hidden: true};
+                columnConfig[self.fieldNames.huc12Name] = {header: 'HUC12 Name'};
+                columnConfig[self.fieldNames.huc12Area] = {header: 'Area (Acres)'};
 
                 var featureGrid = new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-flowline',
-                    store: nhdFlowLineFeatureStore,
+                    store: huc12FeatureStore,
                     region: 'center',
                     autoHeight: true,
                     deferRowRender: false,
@@ -605,7 +526,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         autoFill: true,
                         forceFit: true
                     },
-                    customRenderers: customRenderers,
                     columnConfig: columnConfig
                 });
 
@@ -617,7 +537,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     unpinnable: true,
                     minWidth: 200,
                     minHeight: 100,
-                    title: 'NHD Flowlines',
+                    title: 'HUC12 Selection',
                     items: [featureGrid],
                     listeners: {
                         show: function() {
@@ -633,8 +553,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
                 popup.show();
             }
-        }
-
     },
     getClipValueForZoom: function(zoom) {
         return this.streamOrderClipValues[zoom];

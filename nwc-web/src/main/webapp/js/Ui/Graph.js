@@ -4,24 +4,28 @@ Ext.ns('NWCUI.ui');
  * @param legendElt - a DOM Node in which to render the legend
  * @param values - the array of arrays containing the data to graph
  */
-NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
+NWCUI.ui.Graph = function(graphElt, legendElt, values){
+    var self = this;
+    //make a map of programmatic identifier to user-facing text
+    self.seriesNames = {};
+    self.seriesNames.meanPrecip = 'Mean Precipitation';
+    //@todo add more when rwps process is incorporated
+
     $([graphElt, legendElt]).addClass('generous_left_margin');
     
-    var decileSuffix = "th % (cfs)";
+    var decileSuffix = "th % (cm)";
     var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
         function(prefix){
             return prefix + decileSuffix;
         });
-        
-    var mainLabelSuffix = " (cfs)";
+    //@todo remove this decile labels reset when we have an rwps process that returns deciles
+    decileLabels = [];
+    var mainLabelSuffix = " (cm)";
     var mainLabels = 
     [
-    'Monthly Flow',//initial field
-    //subsequently-loaded fields:
-    'Mean Annual Flow',
-    'Median Annual Flow',
-    'Mean Monthly Flow',
-    'Median Monthly Flow'
+    self.seriesNames.meanPrecip//initial field
+    //@todo subsequently-loaded stats fields will go here
+
     ].map(function(prefix){
         return prefix + mainLabelSuffix;
     });
@@ -36,34 +40,19 @@ NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
     decileLabels.each(function(label){
         allDecileSeriesOptions[label] = canonicalDecileSeriesOptions;
     });
-    var otherSeriesOptions = {
-        'Monthly Flow (cfs)':{
+    var otherSeriesOptions = {};
+    otherSeriesOptions[self.seriesNames.meanPrecip]=
+        {
             strokeWidth: 3,
             stepPlot: false
-        },
-        'Mean Annual Flow (cfs)':{
-            strokeWidth: 2,
-            stepPlot: true
-        },
-        'Median Annual Flow (cfs)':{
-            strokeWidth: 2,
-            stepPlot: true
-        },
-        'Mean Monthly Flow (cfs)': {
-            strokeWidth: 2,
-            stepPlot: false
-        },
-        'Median Monthly Flow (cfs)':{
-            strokeWidth: 2,
-            stepPlot: false
-        }
-    };
+        };
+    
     var allSeriesOptions ={};
     Object.merge(allSeriesOptions, allDecileSeriesOptions);
     Object.merge(allSeriesOptions, otherSeriesOptions);
     
     //functions to customize the display of dates on the Dygraph
-    //these will be attached as public properties of the FlowDygraph
+    //these will be attached as public properties of the Graph
     var dateToStringWithoutDay = function(ms){
         return new Date(ms).format('{Mon}. {yyyy}');
     };
@@ -74,23 +63,16 @@ NWCUI.ui.FlowDygraph = function(graphElt, legendElt, values){
     
     var opts = {
         labels: labels,
-        colors: ['purple','orange','blue','red','green',
-        //deciles:
-        'black','black','black','black','black','black','black','black','black'],
+        colors: ['purple'],
+        //@todo add stat series colors and restore decile colors:
         connectSeparatedPoints: true,
         showRangeSelector: true,
         highlightCircleSize: 0,
-        ylabel: 'Discharge (CFS)',
+        ylabel: 'Precipitation (cm)',
         xlabel: 'Date',
         labelsDiv: legendElt,
         labelsSeparateLines: true,
-        legend: 'always',
-        axes:{
-            x: {
-                valueFormatter: dateToStringWithoutDay,
-                axisLabelFormatter: dateToStringWithoutDay
-            }
-        }
+        legend: 'always'
     };
         
     Object.merge(opts, allSeriesOptions);
