@@ -4,7 +4,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     map: undefined,
     currentZoom: 0,
     nhdFlowlineLayername: 'glri:NHDFlowline',
-    gageStyleName: "GageLocStreamOrder",
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
     sosEndpointUrl: undefined,//defined in displayDataWindow
@@ -36,6 +35,11 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         // ////////////////////////////////////////////// BASE LAYERS
         var zyx = '/MapServer/tile/${z}/${y}/${x}';
         mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Light Gray Base",
+                "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
+                Ext.apply(EPSG900913Options, {numZoomLevels: 14})
+                ));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Topo Map",
                 "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map" + zyx,
                 {isBaseLayer: true, units: "m"}));
@@ -43,11 +47,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 "World Imagery",
                 "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery" + zyx,
                 {isBaseLayer: true, units: "m"}));
-        mapLayers.push(new OpenLayers.Layer.XYZ(
-                "World Light Gray Base",
-                "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
-                Ext.apply(EPSG900913Options, {numZoomLevels: 14})
-                ));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Street Map",
                 "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map" + zyx,
@@ -73,18 +72,21 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         flowlineRaster.id = 'nhd-flowlines-raster-layer';
 
         // ////////////////////////////////////////////// GAGES
-        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
-            url: CONFIG.endpoint.geoserver + 'wfs',
-            streamOrderClipValue: this.streamOrderClipValue,
-            visibility: false
-        });
-        gageFeatureLayer.id = 'gage-feature-layer';
+        var gageFeatureLayer = new OpenLayers.Layer.WMS("Gage Location",
+                                   CONFIG.endpoint.geoserverProxy + 'NWC/wms',
+                                   {
+                                    LAYERS: 'NWC:gagesII',
+                                    STYLES: '',
+                                    format: 'image/png',
+                                    tiled: true
+                                    },
+                                    {
+                                        isBaseLayer : false,
+                                        displayInLayerSwitcher: true
+                                    }
+    );
 
-        var gageData = new OpenLayers.Layer.GageData(
-                "Gage WMS (Data)",
-                CONFIG.endpoint.geoserver + 'wms'
-                );
-        gageData.id = 'gage-location-data';
+        gageFeatureLayer.id = 'gage-feature-layer';
 
 		var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
 			CONFIG.endpoint.geoserver + 'gwc/service/wms',
@@ -93,15 +95,13 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 				transparent: true,
 				styles: ['polygon']
 			}, {
-				opacity: 0.1,
+				opacity: 0.3,
 				isBaseLayer : false
 			});
-
         mapLayers.push(hucLayer);
-        mapLayers.push(flowlinesData);
-        mapLayers.push(gageData);
-        mapLayers.push(flowlineRaster);
         mapLayers.push(gageFeatureLayer);
+        mapLayers.push(flowlinesData);
+        mapLayers.push(flowlineRaster);
 
         // MAP
         this.map = new OpenLayers.Map({
@@ -157,8 +157,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 var zoom = panel.map.zoom;
                                 LOG.info('Current map zoom: ' + zoom);
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
-
-                                panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
 
 // To be used in a future release
 //                                var getFeatureResponses = Object.extended();
