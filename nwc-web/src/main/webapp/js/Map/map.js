@@ -393,12 +393,16 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
             }
         },
+    etaCallback: function(response, options){
+        //@todo implement for real
+        console.log(response.responseText);
+    },
     /**
      * @param ajax - response
      * @param options - the options that initiated the Ajax request
      * @scope the window in which the data will be visualized
      */
-    sosCallback : function(response, options){
+    dayMetCallback : function(response, options){
         //establish scope
         var self = this;
         var win = self.dataWindow;
@@ -458,14 +462,41 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         win.show();
         win.center();
         win.toFront();
-
-        self.sosUrlWithoutBase = 'test/HUC12_daymet.nc?request=GetObservation&service=SOS&version=1.0.0&observedProperty=MEAN_prcp&offering=' + record.data[self.fieldNames.huc12Id];
+        
+        var defaultSosParams = {
+            request: 'GetObservation',
+            service: 'SOS',
+            version: '1.0.0',
+            offering: record.data[self.fieldNames.huc12Id]
+        };
+        
+        //get dayMet data
+        var dayMetSosParams = Ext.apply({
+            observedProperty: 'MEAN_prcp'
+        }, defaultSosParams);
+        
+        var dayMetSosUrlWithoutBase = 'HUC12_daymet.nc?' + Ext.urlEncode(dayMetSosParams);
+        
         Ext.Ajax.request({
-            url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
-            success: self.sosCallback,
+            url: CONFIG.endpoint.threddsProxy + dayMetSosUrlWithoutBase,
+            success: self.dayMetCallback,
             scope: self
-        }
-        );
+        });
+        
+        //get ETa data
+        var etaSosParams = Ext.apply({
+            observedProperty: 'MEAN_et'
+        }, defaultSosParams);
+        
+        var etaSosUrlWithoutBase = 'HUC12_eta.nc?' + Ext.urlEncode(etaSosParams);
+        
+        Ext.Ajax.request({
+            url: CONFIG.endpoint.threddsProxy + etaSosUrlWithoutBase,
+            success: self.etaCallback,
+            scope: self
+        });
+        
+        
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
         var self = this;
