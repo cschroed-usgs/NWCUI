@@ -423,7 +423,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         };
         return CONFIG.endpoint.threddsProxy + fileName + '?' + Ext.urlEncode(sosParams);
     },
-    sosSuccess: function(windowTitle, ajaxResponses){
+    sosSuccess: function(windowTitle, allAjaxResponseArgs){
         var self = this;
         //check to see if a data window already exists. If so, destroy it.
         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
@@ -436,30 +436,54 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             id: 'data-display-window',
             title: windowTitle
         });
+        var errorsFound = false;
         var labeledResponses = {};
-        $.each(ajaxResponses, function(index, response){
-            //the jqXHR object is the 3rd arg of response
-            //the object has been augmented with a label property
-            //by self.makeLabeledAjaxCall
-            var jqXHR = response[2];
-            var label = jqXHR.label;
-            labeledResponses[label] = self.parseSosResponse.apply(this, response);
+        $.each(allAjaxResponseArgs, function(index, ajaxResponseArgs){
+            var responseDoc = ajaxResponseArgs[0];
+            if(null === responseDoc){
+                errorsFound = true;
+                return false;//exit iteration
+            }
+            else{
+                //the jqXHR object is the 3rd arg of response
+                //the object has been augmented with a label property
+                //by self.makeLabeledAjaxCall
+                var jqXHR = ajaxResponseArgs[2],
+                label = jqXHR.label;
+                labeledResponses[label] = self.parseSosResponse.apply(this, ajaxResponseArgs);
+            }
         });
-        console.dir(labeledResponses);
-        win.show();
-        win.center();
-        win.toFront();
+        if(errorsFound){
+            self.sosError.apply(self, allAjaxResponseArgs);
+        }
+        else{
+            console.dir(labeledResponses);
+            win.show();
+            win.center();
+            win.toFront();
+        }
     },
     sosError: function(){
-                var errorResponses = [];
-                Array.exclude(arguments, function(response){
-                    'success' !== response[1];
-                });
-                Ext.Msg(errorResponses);
+        //make arguments into a true array
+        var allAjaxResponseArgsArray = Array.create(arguments);
+        var allErrorAjaxResponseArgs = allAjaxResponseArgsArray.filter(function(response){
+            var responseDoc = response[0],
+                status = response[1];
+            
+            return (null === responseDoc) || ('success' !== status);
+        });
+        var errorReport = '<p>The following attempts to retrieve sensor observations failed:</p>';
+        allErrorAjaxResponseArgs.each(function(errorAjaxResponseArgs){
+            var jqXHR = errorAjaxResponseArgs[2];
+            
+            errorReport += '<p>Resource id: "' + jqXHR.label + '"url: ' + jqXHR.url + '</p>';
+        });
+        NWCUI.ui.errorNotify(errorReport);
     },
     makeLabeledAjaxCall: function(url, label){
         var call = $.ajax(url);
         call.label = label;
+        call.url = url;
         return call;
     },
     /**
