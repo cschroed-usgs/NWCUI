@@ -6,7 +6,7 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
         var title = config.title || "";
         var width = config.width || 1000;
         var height = config.height || 400;
-        
+        self.data = [];
         self.toggleBar = new NWCUI.ui.SeriesToggleToolbar();
                //attach the contained components so that they can be easily referenced later
         self.graphPanel = new NWCUI.ui.StatsGraphPanel();
