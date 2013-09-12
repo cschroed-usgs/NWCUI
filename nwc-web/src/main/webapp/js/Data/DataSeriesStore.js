@@ -9,8 +9,7 @@ NWCUI.data.DataSeriesStore = function(series){
     var defaultSeriesObject = function(){
         return {
             metadata: {
-                seriesName: '',
-                seriesUnits: ''
+                seriesLabels : ['Date']
             },
             data: []
         };
@@ -23,16 +22,19 @@ NWCUI.data.DataSeriesStore = function(series){
         return seriesKeys.union(Object.keys(NWCUI.data.SosSources)).length === seriesKeys.length;
     };
     var updateDailySeries = function(series){
-        var dailyTable = [];
-        var etaIndex = 0;
-        var etaForCurrentMonth = NaN;
-        Ext.each(series.dayMet.data, function(dayMetRow){
+        var dailyTable = [],
+            etaIndex = 0,
+            etaForCurrentMonth = NaN,
+            dayMetSeries = series.dayMet,
+            etaSeries = series.eta;
+    
+        Ext.each(dayMetSeries.data, function(dayMetRow){
             var dayMetDate = dayMetRow[0],
                 dayMetValue = dayMetRow[1],
                 dayIndexInString = dayMetDate.lastIndexOf('/') + 1,
                 dayMetDay = dayMetDate.substr(dayIndexInString, 2);
             if('01' === dayMetDay){
-                var etaRow = series.eta.data[etaIndex];
+                var etaRow = etaSeries.data[etaIndex];
                 if(etaRow){
                     var etaDate = etaRow[0];
                     var etaValue = etaRow[1];
@@ -45,6 +47,13 @@ NWCUI.data.DataSeriesStore = function(series){
             dailyTable.push([dayMetDate, dayMetValue, etaForCurrentMonth]);
         });
         self.daily.data = dailyTable;
+        var addSeriesLabel = function(metadata){
+            self.daily.metadata.seriesLabels.push(
+                    metadata.seriesName + ' (' + metadata.seriesUnits + ')'
+            );
+        };
+        addSeriesLabel(dayMetSeries.metadata);
+        addSeriesLabel(etaSeries.metadata);
     };
     var updateMonthlySeries = function(series){
         
