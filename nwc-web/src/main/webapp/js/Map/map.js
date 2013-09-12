@@ -477,7 +477,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             self.sosError.apply(self, allAjaxResponseArgs);
         }
         else{
-            console.dir(labeledResponses);
+            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
+            console.dir(dataSeriesStore);
             win.show();
             win.center();
             win.toFront();
