@@ -29,22 +29,23 @@ NWCUI.data.DataSeriesStore = function(series){
             etaSeries = series.eta;
     
         Ext.each(dayMetSeries.data, function(dayMetRow){
-            var dayMetDate = dayMetRow[0],
+            var dayMetDateStr = dayMetRow[0],
                 dayMetValue = dayMetRow[1],
-                dayIndexInString = dayMetDate.lastIndexOf('/') + 1,
-                dayMetDay = dayMetDate.substr(dayIndexInString, 2);
+                dayIndexInString = dayMetDateStr.lastIndexOf('/') + 1,
+                dayMetDay = dayMetDateStr.substr(dayIndexInString, 2);
             if('01' === dayMetDay){
                 var etaRow = etaSeries.data[etaIndex];
                 if(etaRow){
-                    var etaDate = etaRow[0];
+                    var etaDateStr = etaRow[0];
                     var etaValue = etaRow[1];
-                    if(etaDate === dayMetDate){
+                    if(etaDateStr === dayMetDateStr){
                         etaForCurrentMonth = etaValue;
                         etaIndex++;
                     }
                 }//else we have fallen off the end of the eta array
             }
-            dailyTable.push([dayMetDate, dayMetValue, etaForCurrentMonth]);
+            var date = new Date(dayMetDateStr);
+            dailyTable.push([date, dayMetValue, etaForCurrentMonth]);
         });
         self.daily.data = dailyTable;
         var addSeriesLabel = function(metadata){

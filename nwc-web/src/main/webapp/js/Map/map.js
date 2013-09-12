@@ -444,20 +444,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         return CONFIG.endpoint.threddsProxy + dataset + '/' + fileName + '?' + Ext.urlEncode(sosParams);
     },
     sosSuccess: function(windowTitle, allAjaxResponseArgs){
-        var self = this;
-        //check to see if a data window already exists. If so, destroy it.
-        var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
-        if (dataDisplayWindow) {
-            LOG.debug('Removing previous data display window');
-            dataDisplayWindow.destroy();
-        }
-
-        var win = new NWCUI.ui.DataWindow({
-            id: 'data-display-window',
-            title: windowTitle
-        });
-        var errorsFound = false;
-        var labeledResponses = {};
+        var self = this,
+            errorsFound = false,
+            labeledResponses = {};
+    
         $.each(allAjaxResponseArgs, function(index, ajaxResponseArgs){
             var responseDoc = ajaxResponseArgs[0];
             if(null === responseDoc){
@@ -477,11 +467,25 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             self.sosError.apply(self, allAjaxResponseArgs);
         }
         else{
-            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
-            console.dir(dataSeriesStore);
+            //check to see if a data window already exists. If so, destroy it.
+            var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
+            if (dataDisplayWindow) {
+                LOG.debug('Removing previous data display window');
+                dataDisplayWindow.destroy();
+            }
+
+            var win = new NWCUI.ui.DataWindow({
+                id: 'data-display-window',
+                title: windowTitle
+            });
             win.show();
             win.center();
             win.toFront();
+            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
+            var graphDiv = win.graphPanel.getEl().dom;
+            var legendDiv = win.labelPanel.getEl().dom;
+            var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, dataSeriesStore);
+            win.doLayout();
         }
     },
     sosError: function(){
