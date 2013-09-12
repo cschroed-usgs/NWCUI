@@ -407,13 +407,27 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             },
             data: parsedSOS.observations[0].result.dataArray.values
         };
+        
+        //remove whitespace,
+        //for date field, convert from ISO to regular date to avoid 
+        //artificial timezone correction
+        //for numerical value, parseFloat
+        parsedObject.data = parsedObject.data.map(function(datum){
+            var dateStr = datum[0],
+                numericalValue = parseFloat(datum[1]);
+            dateStr = dateStr.trim();
+            var timeIndex = dateStr.indexOf('T');//ISO time marker
+            dateStr = dateStr.slice(0, timeIndex);
+            dateStr = dateStr.replace(/-/g, '/');
+            return [dateStr, numericalValue];
+        });
         return parsedObject;
     },
     sosSource: function(config){
         var self = this;
         
     },
-    buildSosUrl: function(offering, observedProperty, fileName){
+    buildSosUrl: function(offering, observedProperty, dataset, fileName){
         var sosParams = {
             request: 'GetObservation',
             service: 'SOS',
@@ -421,7 +435,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             observedProperty: observedProperty,
             offering: offering
         };
-        return CONFIG.endpoint.threddsProxy + fileName + '?' + Ext.urlEncode(sosParams);
+        return CONFIG.endpoint.threddsProxy + dataset + '/' + fileName + '?' + Ext.urlEncode(sosParams);
     },
     sosSuccess: function(windowTitle, allAjaxResponseArgs){
         var self = this;
@@ -500,7 +514,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var labeledAjaxCalls = [];
         
         Ext.iterate(NWCUI.data.SosSources, function(id, metadata){
-           var url = self.buildSosUrl(offering, metadata.observedProperty, metadata.fileName);
+           var url = self.buildSosUrl(offering, metadata.observedProperty, metadata.dataset, metadata.fileName);
            var labeledAjaxCall = self.makeLabeledAjaxCall(url, id);
            labeledAjaxCalls.push(labeledAjaxCall);
         });
@@ -539,7 +553,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             ];
 
 
-        huc12FeatureStore = new GeoExt.data.FeatureStore({
+        var huc12FeatureStore = new GeoExt.data.FeatureStore({
             features: features,
             fields: hucFields,
             initDir: 0
