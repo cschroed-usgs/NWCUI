@@ -429,10 +429,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         return parsedObject;
     },
-    sosSource: function(config){
-        var self = this;
-        
-    },
     buildSosUrl: function(offering, observedProperty, dataset, fileName){
         var sosParams = {
             request: 'GetObservation',
