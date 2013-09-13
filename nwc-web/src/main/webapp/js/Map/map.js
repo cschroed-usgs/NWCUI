@@ -420,7 +420,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 //by self.makeLabeledAjaxCall
                 var jqXHR = ajaxResponseArgs[2],
                 label = jqXHR.label;
-                labeledResponses[label] = self.parseSosResponse.apply(this, ajaxResponseArgs);
+                labeledResponses[label] = NWCUI.data.parseSosResponse.apply(self, ajaxResponseArgs);
             }
         });
         if(errorsFound){
