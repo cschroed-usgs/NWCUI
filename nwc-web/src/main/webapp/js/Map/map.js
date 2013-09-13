@@ -394,77 +394,153 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             }
         },
     /**
-     * @param ajax - response
-     * @param options - the options that initiated the Ajax request
-     * @scope the window in which the data will be visualized
+     * @param {object} response
+     * @returns {object} - an object with data and metadata fields
      */
-    sosCallback : function(response, options){
-        //establish scope
+    parseSosResponse : function(response){
+        var parser = new OpenLayers.Format.SOSGetObservation();
+        var parsedSOS = parser.read(response);
+        var parsedObject = {
+            metadata: {
+              seriesName : parsedSOS.observations[0].result.dataArray.dataRecord[1].name,
+              seriesUnits : parsedSOS.observations[0].result.dataArray.dataRecord[1].uom
+            },
+            data: parsedSOS.observations[0].result.dataArray.values
+        };
+        
+        //remove whitespace,
+        //for date field, convert from ISO to regular date to avoid 
+        //artificial timezone correction
+        //for numerical value, parseFloat and convert 'missing' values to NaN
+        var missingValues = [9.96921e+36, -999];
+        parsedObject.data = parsedObject.data.map(function(datum){
+            var dateStr = datum[0],
+                numericalValue = parseFloat(datum[1]);
+            
+            if(missingValues.any(numericalValue)){
+                numericalValue = NaN;
+            }
+            dateStr = dateStr.trim();
+            var timeIndex = dateStr.indexOf('T');//ISO time marker
+            dateStr = dateStr.slice(0, timeIndex);
+            dateStr = dateStr.replace(/-/g, '/');
+            
+            return [dateStr, numericalValue];
+        });
+        return parsedObject;
+    },
+    sosSource: function(config){
         var self = this;
-        var win = self.dataWindow;
-        if(!response.responseXML){  //since IE doesn't always populate this
-                                    //property, parse the text if necessary
-            response.responseXML = $.parseXML(response.responseText);
-        }
-        if(response.responseText.toLowerCase().indexOf('exception') !== -1){
-            NWCUI.ui.errorNotify("Error retrieving data from server. See browser logs for details.");
-            LOG.error(response.responseText);
+        
+    },
+    buildSosUrl: function(offering, observedProperty, dataset, fileName){
+        var sosParams = {
+            request: 'GetObservation',
+            service: 'SOS',
+            version: '1.0.0',
+            observedProperty: observedProperty,
+            offering: offering
+        };
+        return CONFIG.endpoint.threddsProxy + dataset + '/' + fileName + '?' + Ext.urlEncode(sosParams);
+    },
+    sosSuccess: function(windowTitle, allAjaxResponseArgs){
+        var self = this,
+            errorsFound = false,
+            labeledResponses = {};
+    
+        $.each(allAjaxResponseArgs, function(index, ajaxResponseArgs){
+            var responseDoc = ajaxResponseArgs[0];
+            if(null === responseDoc){
+                errorsFound = true;
+                return false;//exit iteration
+            }
+            else{
+                //the jqXHR object is the 3rd arg of response
+                //the object has been augmented with a label property
+                //by self.makeLabeledAjaxCall
+                var jqXHR = ajaxResponseArgs[2],
+                label = jqXHR.label;
+                labeledResponses[label] = self.parseSosResponse.apply(this, ajaxResponseArgs);
+            }
+        });
+        if(errorsFound){
+            self.sosError.apply(self, allAjaxResponseArgs);
         }
         else{
-            var responseTxt = $(response.responseXML).find('swe\\:values').text();
-            if (0 === responseTxt.length){
-                responseTxt = $(response.responseXML).find('values').text();
+            //check to see if a data window already exists. If so, destroy it.
+            var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
+            if (dataDisplayWindow) {
+                LOG.debug('Removing previous data display window');
+                dataDisplayWindow.destroy();
             }
-            var numFieldsToLoadLater = 0;
-            var values = NWCUI.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-            win.graphPanel.graph = NWCUI.ui.Graph(
-                win.graphPanel.getEl().dom,
-                win.labelPanel.getEl().dom,
-                values);
-
-            //attach the info to the graphPanel for easy access during data export
-            win.graphPanel.data={
-                values : values,
-                headers: win.graphPanel.graph.getLabels()
-            };
+            var win = new NWCUI.ui.DataWindow({
+                id: 'data-display-window',
+                title: windowTitle
+            });
+            win.show();
+            win.center();
+            win.toFront();
+            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
+            var graphDiv = win.graphPanel.getEl().dom;
+            var legendDiv = win.labelPanel.getEl().dom;
+            var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, dataSeriesStore);
             win.doLayout();
         }
     },
-
+    sosError: function(){
+        //make arguments into a true array
+        var allAjaxResponseArgsArray = Array.create(arguments);
+        var allErrorAjaxResponseArgs = allAjaxResponseArgsArray.filter(function(response){
+            var responseDoc = response[0],
+                status = response[1];
+            
+            return (null === responseDoc) || ('success' !== status);
+        });
+        var errorReport = '<p>The following attempts to retrieve sensor observations failed:</p>';
+        allErrorAjaxResponseArgs.each(function(errorAjaxResponseArgs){
+            var jqXHR = errorAjaxResponseArgs[2];
+            
+            errorReport += '<p>Resource id: "' + jqXHR.label + '"url: ' + jqXHR.url + '</p>';
+        });
+        NWCUI.ui.errorNotify(errorReport);
+    },
+    makeLabeledAjaxCall: function(url, label){
+        var call = $.ajax(url);
+        call.label = label;
+        call.url = url;
+        return call;
+    },
     /**
      * @param record - a reach's record.
      *
      */
     displayDataWindow: function(record){
         var self = this;
-        //check to see if a data window already exists. If so, destroy it.
-        var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
-        if (dataDisplayWindow) {
-            LOG.debug('Removing previous data display window');
-            dataDisplayWindow.destroy();
-        }
+        var offering = record.data[self.fieldNames.huc12Id];
         var huc12Name = record.data[self.fieldNames.huc12Name] || "";
         var huc12Id = record.data[self.fieldNames.huc12Id] || "";
         var title = huc12Name.length ? huc12Name + " - " : "";
         title += huc12Id;
-
-        //init a window that will be used as context for the callback
-        var win = self.dataWindow = new NWCUI.ui.DataWindow({
-            id: 'data-display-window',
-            title: title
+        var labeledAjaxCalls = [];
+        
+        Ext.iterate(NWCUI.data.SosSources, function(id, metadata){
+           var url = self.buildSosUrl(offering, metadata.observedProperty, metadata.dataset, metadata.fileName);
+           var labeledAjaxCall = self.makeLabeledAjaxCall(url, id);
+           labeledAjaxCalls.push(labeledAjaxCall);
         });
 
-        win.show();
-        win.center();
-        win.toFront();
-
-        self.sosUrlWithoutBase = 'test/HUC12_daymet.nc?request=GetObservation&service=SOS&version=1.0.0&observedProperty=MEAN_prcp&offering=' + record.data[self.fieldNames.huc12Id];
-        Ext.Ajax.request({
-            url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
-            success: self.sosCallback,
-            scope: self
-        }
+        /**
+         * gets the arguments for a standard jquery ajax callback
+         * and injects the title into the real callback
+         */
+        var sosSuccessWrapper = function(){
+            self.sosSuccess(title, arguments);
+        };
+        //run all ajax calls and execute the callback 
+        $.when.apply(self, labeledAjaxCalls).then(
+            sosSuccessWrapper,
+            self.sosError
         );
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
@@ -488,7 +564,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             ];
 
 
-        huc12FeatureStore = new GeoExt.data.FeatureStore({
+        var huc12FeatureStore = new GeoExt.data.FeatureStore({
             features: features,
             fields: hucFields,
             initDir: 0

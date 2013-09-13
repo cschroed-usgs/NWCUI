@@ -1,7 +1,6 @@
 Ext.ns("NWCUI.ui");
 
 NWCUI.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
-    initialData: undefined,
     graph: undefined,
     headers: undefined,
     constructor: function(config) {
