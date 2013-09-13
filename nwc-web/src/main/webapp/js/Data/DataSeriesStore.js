@@ -45,7 +45,8 @@ NWCUI.data.DataSeriesStore = function(series){
                 }//else we have fallen off the end of the eta array
             }
             var date = new Date(dayMetDateStr);
-            dailyTable.push([date, dayMetValue, etaForCurrentMonth]);
+            var averageDailyEta = etaForCurrentMonth / date.daysInMonth();
+            dailyTable.push([date, dayMetValue, averageDailyEta]);
         });
         self.daily.data = dailyTable;
         var addSeriesLabel = function(metadata){
