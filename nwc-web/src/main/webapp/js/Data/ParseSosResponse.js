@@ -18,7 +18,7 @@ NWCUI.data.parseSosResponse = function(response){
     //for date field, convert from ISO to regular date to avoid 
     //artificial timezone correction
     //for numerical value, parseFloat and convert 'missing' values to NaN
-    var missingValues = [9.96921e+36, -999];
+    var missingValues = NWCUI.data.parseSosResponse.missingValues;
     parsedObject.data = parsedObject.data.map(function(datum){
         var dateStr = datum[0],
             numericalValue = parseFloat(datum[1]);
@@ -35,4 +35,4 @@ NWCUI.data.parseSosResponse = function(response){
     });
     return parsedObject;
 };
-NWCUI.data.parseSosResponse.emptyValueThreshold = 9.96921e+36;//any precip values above this amount will be considered NaN's
+NWCUI.data.parseSosResponse.missingValues = [9.96921e+36, -999];
