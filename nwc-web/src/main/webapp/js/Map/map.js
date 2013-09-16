@@ -393,16 +393,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
             }
         },
-    buildSosUrl: function(offering, observedProperty, dataset, fileName){
-        var sosParams = {
-            request: 'GetObservation',
-            service: 'SOS',
-            version: '1.0.0',
-            observedProperty: observedProperty,
-            offering: offering
-        };
-        return CONFIG.endpoint.threddsProxy + dataset + '/' + fileName + '?' + Ext.urlEncode(sosParams);
-    },
     sosSuccess: function(windowTitle, allAjaxResponseArgs){
         var self = this,
             errorsFound = false,
@@ -417,10 +407,11 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             else{
                 //the jqXHR object is the 3rd arg of response
                 //the object has been augmented with a label property
-                //by self.makeLabeledAjaxCall
-                var jqXHR = ajaxResponseArgs[2],
-                label = jqXHR.label;
-                labeledResponses[label] = NWCUI.data.parseSosResponse.apply(self, ajaxResponseArgs);
+                //by makeLabeledAjaxCall
+                var response = ajaxResponseArgs[0],
+                    jqXHR = ajaxResponseArgs[2],
+                    label = jqXHR.label;
+                labeledResponses[label] = NWCUI.data.parseSosResponse(response);
             }
         });
         if(errorsFound){
@@ -465,12 +456,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         NWCUI.ui.errorNotify(errorReport);
     },
-    makeLabeledAjaxCall: function(url, label){
-        var call = $.ajax(url);
-        call.label = label;
-        call.url = url;
-        return call;
-    },
     /**
      * @param record - a reach's record.
      *
@@ -484,9 +469,9 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         title += huc12Id;
         var labeledAjaxCalls = [];
         
-        Ext.iterate(NWCUI.data.SosSources, function(id, metadata){
-           var url = self.buildSosUrl(offering, metadata.observedProperty, metadata.dataset, metadata.fileName);
-           var labeledAjaxCall = self.makeLabeledAjaxCall(url, id);
+        Ext.iterate(NWCUI.data.SosSources, function(sourceId, source){
+           var url = NWCUI.data.buildSosUrlFromSource(offering, source);
+           var labeledAjaxCall = NWCUI.util.makeLabeledAjaxCall(sourceId, url);
            labeledAjaxCalls.push(labeledAjaxCall);
         });
 
