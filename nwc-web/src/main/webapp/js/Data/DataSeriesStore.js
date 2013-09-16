@@ -21,6 +21,11 @@ NWCUI.data.DataSeriesStore = function(series){
         var seriesKeys = Object.keys(series);
         return seriesKeys.union(Object.keys(NWCUI.data.SosSources)).length === seriesKeys.length;
     };
+    var addSeriesLabel = function(seriesClass, metadata){
+        self[seriesClass].metadata.seriesLabels.push(
+                metadata.seriesName + ' (' + metadata.seriesUnits + ')'
+        );
+    };
     var updateDailySeries = function(series){
         var dailyTable = [],
             etaIndex = 0,
@@ -49,20 +54,60 @@ NWCUI.data.DataSeriesStore = function(series){
             dailyTable.push([date, dayMetValue, averageDailyEta]);
         });
         self.daily.data = dailyTable;
-        var addSeriesLabel = function(metadata){
-            self.daily.metadata.seriesLabels.push(
-                    metadata.seriesName + ' (' + metadata.seriesUnits + ')'
-            );
-        };
-        addSeriesLabel(dayMetSeries.metadata);
-        addSeriesLabel(etaSeries.metadata);
+
+        addSeriesLabel('daily', dayMetSeries.metadata);
+        addSeriesLabel('daily', etaSeries.metadata);
     };
     var updateMonthlySeries = function(series){
-        
+        var monthlyTable = [],
+            etaIndex = 0,
+            etaForCurrentMonth = NaN,
+            dayMetSeries = series.dayMet,
+            monthlyAccumulation = 0,
+            firstMonthOfPeriodOfRecord = true,
+            monthDateStr = '',//stored at the beginning of every month, used later once the totals have been accumulated for the month
+            etaSeries = series.eta;
+    
+        Ext.each(dayMetSeries.data, function(dayMetRow){
+            var dayMetDateStr = dayMetRow[0],
+                dayMetValue = dayMetRow[1],
+                dayIndexInString = dayMetDateStr.lastIndexOf('/') + 1,
+                dayMetDay = dayMetDateStr.substr(dayIndexInString, 2);
+            if('01' === dayMetDay){
+                if(firstMonthOfPeriodOfRecord){
+                    firstMonthOfPeriodOfRecord = false;
+                }
+                else{
+                    //join the date, accumulation and the eta for last month
+                    var etaRow = etaSeries.data[etaIndex];
+                    if(etaRow){
+                        var etaDateStr = etaRow[0];
+                        var etaValue = etaRow[1];
+                        if(etaDateStr === monthDateStr){
+                            etaForCurrentMonth = etaValue;
+                            etaIndex++;
+                        }
+                    }//else we have fallen off the end of the eta array
+                    var date = new Date(monthDateStr);
+                    monthlyTable.push([date, monthlyAccumulation, etaForCurrentMonth]);
+                    monthlyAccumulation = 0;
+                }
+                monthDateStr = dayMetDateStr;
+            }
+            
+            monthlyAccumulation = (monthlyAccumulation + dayMetValue).round(9);//minimize floating-point errors from accumulating
+
+        });
+        self.monthly.data = monthlyTable;
+
+        addSeriesLabel('monthly', dayMetSeries.metadata);
+        addSeriesLabel('monthly', etaSeries.metadata);
+        console.dir(self.monthly.data);
     };
     var updateDataSeries = function(series){
         if(validSeriesObject(series)){
             updateDailySeries(series);
+            updateMonthlySeries(series);
         }
         else{
             throw new Error("Invalid data series format.");
@@ -70,5 +115,5 @@ NWCUI.data.DataSeriesStore = function(series){
     };
     
     
-    updateDailySeries(series);
+    updateDataSeries(series);
 };
