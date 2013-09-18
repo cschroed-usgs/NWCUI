@@ -1,4 +1,13 @@
 Ext.ns('NWCUI.data');
+NWCUI.data.DataSeries = function(){
+        return {
+            metadata: {
+                seriesLabels : ['Date']
+            },
+            data: []
+        };
+ };
+
 /**
  * Given mixed frequency data series metadata and data, converts it to 
  * monthly and daily series for Graph to consume.
@@ -6,16 +15,8 @@ Ext.ns('NWCUI.data');
  */
 NWCUI.data.DataSeriesStore = function(series){
     var self = this;
-    var defaultSeriesObject = function(){
-        return {
-            metadata: {
-                seriesLabels : ['Date']
-            },
-            data: []
-        };
-    };
-    self.daily = defaultSeriesObject();
-    self.monthly = defaultSeriesObject();
+    self.daily = new NWCUI.data.DataSeries();
+    self.monthly = new NWCUI.data.DataSeries();
     var validSeriesObject = function(series){
         //verify that all of the keys *SosSources* are present in *series*;
         var seriesKeys = Object.keys(series);
@@ -102,7 +103,6 @@ NWCUI.data.DataSeriesStore = function(series){
 
         addSeriesLabel('monthly', dayMetSeries.metadata);
         addSeriesLabel('monthly', etaSeries.metadata);
-        console.dir(self.monthly.data);
     };
     var updateDataSeries = function(series){
         if(validSeriesObject(series)){

@@ -2,13 +2,11 @@ Ext.ns('NWCUI.ui');
 /**
  * @param {DOMNode} graphElt - a DOM Node in which to render the Dygraph
  * @param {DOMNode} legendElt - a DOM Node in which to render the legend
- * @param {DataSeriesStore} series - the series to graph
+ * @param {array<array>} values - the values to plot
+ * @param {array<string>} labels - the labels for the series
  */
-NWCUI.ui.Graph = function(graphElt, legendElt, series){
-    var self = this,
-        defaultSeries = 'daily',
-        values = series[defaultSeries].data,
-        labels = series[defaultSeries].metadata.seriesLabels;
+NWCUI.ui.Graph = function(graphElt, legendElt, values, labels){
+    var self = this;
 
     $([graphElt, legendElt]).addClass('generous_left_margin');
     
