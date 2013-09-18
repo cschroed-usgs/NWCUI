@@ -6,12 +6,11 @@ NWCUI.ui.SeriesToggleToolbar= Ext.extend(Ext.Toolbar, {
     },
     constructor: function(config) {
         var self = this;
-        self.menu = new NWCUI.ui.SeriesToggleMenu();
+        
         config = Ext.apply({
             items: [
-                {text: 'Toggle Graph Series',
-                 menu: self.menu
-                }
+                    'Graph View:',
+                    new NWCUI.ui.ViewComboBox({window: config.window})
             ]
         }, config);
 

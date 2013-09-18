@@ -431,19 +431,15 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 LOG.debug('Removing previous data display window');
                 dataDisplayWindow.destroy();
             }
-
+            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
             var win = new NWCUI.ui.DataWindow({
                 id: 'data-display-window',
-                title: windowTitle
+                title: windowTitle,
+                dataSeriesStore: dataSeriesStore
             });
             win.show();
             win.center();
             win.toFront();
-            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
-            var graphDiv = win.graphPanel.getEl().dom;
-            var legendDiv = win.labelPanel.getEl().dom;
-            var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, dataSeriesStore);
-            win.doLayout();
         }
     },
     sosError: function(){
