@@ -17,4 +17,11 @@ NWCUI.util.wrapEachWithKey = function(array, key){
          obj[key]=theVal;
          return obj;
     });
- };
+};
+
+NWCUI.util.makeLabeledAjaxCall = function(label, url, ajaxOptions){
+        var call = $.ajax(url, ajaxOptions);
+        call.label = label;
+        call.url = url;
+        return call;
+};

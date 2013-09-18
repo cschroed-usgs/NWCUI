@@ -110,11 +110,14 @@
         <script type="text/javascript" src="js/Map/map.js"></script>
         <script type="text/javascript" src="js/Data/StatsStore.js"></script>
         <script type="text/javascript" src="js/Data/ParseSosResponse.js"></script>
+        <script type="text/javascript" src="js/Data/SosSources.js"></script>
+        <script type="text/javascript" src="js/Data/DataSeriesStore.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
         <script type="text/javascript" src="js/Ui/ErrorNotify.js"></script>
         <script type="text/javascript" src="js/Ui/DataExportToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleMenu.js"></script>
+        <script type="text/javascript" src="js/Ui/ViewComboBox.js"></script>
         <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
