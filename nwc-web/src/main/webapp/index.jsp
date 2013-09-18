@@ -91,6 +91,8 @@
             CONFIG.endpoint.rwpsProxy = 'rwps/';
             CONFIG.endpoint.thredds = '<%= props.getProperty("nwcui.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
+            CONFIG.endpoint.thredds = '<%= props.getProperty("nwcui.endpoint.bioDataGeoserver", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
+            CONFIG.endpoint.bioDataGeoserverProxy = 'bioDataGeoserver/';
             CONFIG.endpoint.exporter = 'export';
             CONFIG.attribution = {
                 usgs:{

@@ -88,17 +88,31 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         gageFeatureLayer.id = 'gage-feature-layer';
 
-		var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
-			CONFIG.endpoint.geoserver + 'gwc/service/wms',
-			{
-				layers: 'NHDPlusHUCs:NationalWBDSnapshot',
-				transparent: true,
-				styles: ['polygon']
-			}, {
-				opacity: 0.3,
-				isBaseLayer : false
-			});
+        var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
+                CONFIG.endpoint.geoserver + 'gwc/service/wms',
+                {
+                        layers: 'NHDPlusHUCs:NationalWBDSnapshot',
+                        transparent: true,
+                        styles: ['polygon']
+                }, {
+                        opacity: 0.3,
+                        isBaseLayer : false
+        });
+        hucLayer.id = 'huc-feature-layer';
+        
+        var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
+               CONFIG.endpoint.bioDataGeoserverProxy  + 'wms/',
+                {
+                        layers: 'BioData:SiteInfo',
+                        transparent: true,
+                }, {
+                        opacity: 0.3,
+                        isBaseLayer : false
+        });
+        bioDataSitesLayer.id = 'biodata-sites-feature-layer';
+        
         mapLayers.push(hucLayer);
+        mapLayers.push(bioDataSitesLayer);
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(flowlineRaster);
@@ -254,7 +268,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                hucLayer
+                hucLayer,
+                bioDataSitesLayer
             ],
             queryVisible: true,
             output: 'object',
