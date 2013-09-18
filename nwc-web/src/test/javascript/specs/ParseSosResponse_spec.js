@@ -3,11 +3,10 @@ describe('ParseSosResponse.js', function(){
     
     //testing constants:
     var numLeadingNans = 3;//update this if you change the test data
-    var defaultNumFieldsLoadedLater = 13;
     
     //wrapper for tested function
     var parse = function(data){
-        return NWCUI.data.parseSosResponse(data, defaultNumFieldsLoadedLater);
+        return NWCUI.data.parseSosResponseValues(data);
     };
     
     var countNaNsInResults = function(results){
@@ -25,7 +24,7 @@ describe('ParseSosResponse.js', function(){
     }   
     
     it('should implement the parseSosResponse function', function(){
-       expect(NWCUI.data.parseSosResponse).toBeDefined();
+       expect(NWCUI.data.parseSosResponseValues).toBeDefined();
     });
     
     it('should not insert NaNs into the result when the incoming data has no NaNs', function(){
@@ -109,9 +108,9 @@ nansInFrontData = "1951-01-01T00:00:00Z,NaN \n" +
 "1952-11-01T00:00:00Z,1.59 \n" +
 "1952-12-01T00:00:00Z,1.45 \n";
 
-emptysInFrontData = "1951-01-01T00:00:00Z,9.96921E366 \n" +
-"1951-02-01T00:00:00Z,9.96921E366 \n" +
-"1951-03-01T00:00:00Z,9.96921E366 \n" +
+emptysInFrontData = "1951-01-01T00:00:00Z,9.96921E36 \n" +
+"1951-02-01T00:00:00Z,9.96921E36 \n" +
+"1951-03-01T00:00:00Z,9.96921E36 \n" +
 "1951-04-01T00:00:00Z,4.2 \n" +
 "1951-05-01T00:00:00Z,1.49 \n" +
 "1951-06-01T00:00:00Z,1.26 \n" +
@@ -164,8 +163,8 @@ nansInFrontAndMiddleData = "1951-01-01T00:00:00Z,NaN \n" +
 "1952-12-01T00:00:00Z,1.45 \n";
 
 emptysInFrontAndMiddleData = "1951-01-01T00:00:00Z,9.96921E36 \n" +
-"1951-02-01T00:00:00Z,9.96921E366 \n" +
-"1951-03-01T00:00:00Z,9.96921E366 \n" +
+"1951-02-01T00:00:00Z,9.96921E36 \n" +
+"1951-03-01T00:00:00Z,9.96921E36 \n" +
 "1951-04-01T00:00:00Z,4.2 \n" +
 "1951-05-01T00:00:00Z,1.49 \n" +
 "1951-06-01T00:00:00Z,1.26 \n" +
@@ -178,8 +177,8 @@ emptysInFrontAndMiddleData = "1951-01-01T00:00:00Z,9.96921E36 \n" +
 "1952-01-01T00:00:00Z,1.66 \n" +
 
 //The NaNs in the middle
-"1952-02-01T00:00:00Z,9.96921E366 \n" +
-"1952-03-01T00:00:00Z,9.96921E366 \n" +
+"1952-02-01T00:00:00Z,9.96921E36 \n" +
+"1952-03-01T00:00:00Z,9.96921E36 \n" +
 //update tests if you change the # of NaNs in the middle
 
 "1952-04-01T00:00:00Z,3.59 \n" +
