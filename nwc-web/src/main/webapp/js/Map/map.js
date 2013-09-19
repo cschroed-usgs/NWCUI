@@ -88,17 +88,31 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         gageFeatureLayer.id = 'gage-feature-layer';
 
-		var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
-			CONFIG.endpoint.geoserver + 'gwc/service/wms',
-			{
-				layers: 'NHDPlusHUCs:NationalWBDSnapshot',
-				transparent: true,
-				styles: ['polygon']
-			}, {
-				opacity: 0.3,
-				isBaseLayer : false
-			});
+        var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
+                CONFIG.endpoint.geoserver + 'gwc/service/wms',
+                {
+                        layers: 'NHDPlusHUCs:NationalWBDSnapshot',
+                        transparent: true,
+                        styles: ['polygon']
+                }, {
+                        opacity: 0.3,
+                        isBaseLayer : false
+        });
+        hucLayer.id = 'huc-feature-layer';
+        
+        var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
+               CONFIG.endpoint.bioDataGeoserverProxy  + 'wms/',
+                {
+                        layers: 'BioData:SiteInfo',
+                        transparent: true,
+                }, {
+                        opacity: 0.3,
+                        isBaseLayer : false
+        });
+        bioDataSitesLayer.id = 'biodata-sites-feature-layer';
+        
         mapLayers.push(hucLayer);
+        mapLayers.push(bioDataSitesLayer);
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(flowlineRaster);
@@ -254,7 +268,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                hucLayer
+                hucLayer,
+                bioDataSitesLayer
             ],
             queryVisible: true,
             output: 'object',
@@ -501,80 +516,125 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         if (dataDisplayWindow) {
             dataDisplayWindow.destroy();
         }
-
-        var features = responseObject.features[0].features;
-
-        //prepare field definitions for Ext Store contructors:
-        var hucFields = [
-                {name: self.fieldNames.huc12Id, type: 'string'},
-                {name: self.fieldNames.huc12Name, type: 'string'},
-                {name: self.fieldNames.huc12Area, type: 'long'}
-            ];
-
-
-        var huc12FeatureStore = new GeoExt.data.FeatureStore({
-            features: features,
-            fields: hucFields,
-            initDir: 0
+        var numReturnedFeatureCollections = responseObject.features.length;
+        var hucLayerVisible = self.map.getLayersBy('id', 'huc-feature-layer')[0].getVisibility();
+        var hucFeatures = [];
+        var bioDataFeatures = []; 
+        responseObject.features.each(function(layer){
+            if(layer.features.length){
+               switch (layer.features[0].gml.featureNSPrefix.toLowerCase()){
+                   case 'nhdplushucs':
+                       hucFeatures = hucFeatures.concat(layer.features);
+                       break;
+                   case 'biodata':
+                       bioDataFeatures = bioDataFeatures.concat(layer.features);
+                       break;
+               }
+            }
         });
-
-            var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
-                layerFromStore: true,
-                singleSelect: true
-            });
-            featureSelectionModel.on({
-                'rowselect' : {
-                    fn : function(obj, rowIndex, record) { self.displayDataWindow(record); },
-                    delay: 100
-                 }
-             });
-
-            if (huc12FeatureStore.totalLength) {
+        
+        if(hucLayerVisible){
+            var hucLayer;
+               
+            if(hucFeatures.length){
+                //prepare field definitions for Ext Store contructors:
+                var hucFields = [
+                        {name: self.fieldNames.huc12Id, type: 'string'},
+                        {name: self.fieldNames.huc12Name, type: 'string'},
+                        {name: self.fieldNames.huc12Area, type: 'long'}
+                    ];
+                //prepare column configs for the feature selection dialog
                 var columnConfig ={};
 
                 columnConfig[self.fieldNames.huc12Id] = {header: 'HUC12'};
                 columnConfig[self.fieldNames.huc12Name] = {header: 'HUC12 Name'};
                 columnConfig[self.fieldNames.huc12Area] = {header: 'Area (Acres)'};
 
-                var featureGrid = new gxp.grid.FeatureGrid({
-                    id: 'identify-popup-grid-flowline',
-                    store: huc12FeatureStore,
-                    region: 'center',
-                    autoHeight: true,
-                    deferRowRender: false,
-                    forceLayout: true,
-                    sm: featureSelectionModel,
-                    viewConfig: {
-                        autoFill: true,
-                        forceFit: true
-                    },
-                    columnConfig: columnConfig
+                var huc12FeatureStore = new GeoExt.data.FeatureStore({
+                    features: hucFeatures,
+                    fields: hucFields,
+                    initDir: 0
                 });
 
-                popup = new GeoExt.Popup({
-                    id: 'identify-popup-window',
-                    anchored: false,
-                    layout: 'fit',
-                    map: CONFIG.mapPanel.map,
-                    unpinnable: true,
-                    minWidth: 400,
-                    minHeight: 200,
-                    title: 'HUC12 Selection',
-                    items: [featureGrid],
-                    listeners: {
-                        show: function() {
-                            // Remove the anchor element (setting anchored to
-                            // false does not do this for us. *Shaking fist @ GeoExt)
-                            Ext.select('.gx-popup-anc').remove();
-                            this.syncSize();
-                            this.setHeight(featureGrid.getHeight());
-                            this.setHeight(featureGrid.getWidth());
+                var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
+                    layerFromStore: true,
+                    singleSelect: true
+                });
+                featureSelectionModel.on({
+                    'rowselect' : {
+                        fn : function(obj, rowIndex, record) { self.displayDataWindow(record); },
+                        delay: 100
+                     }
+                 });
+
+                if (huc12FeatureStore.totalLength) {
+
+
+                    var featureGrid = new gxp.grid.FeatureGrid({
+                        id: 'identify-popup-grid-flowline',
+                        store: huc12FeatureStore,
+                        region: 'center',
+                        autoHeight: true,
+                        deferRowRender: false,
+                        forceLayout: true,
+                        sm: featureSelectionModel,
+                        viewConfig: {
+                            autoFill: true,
+                            forceFit: true
+                        },
+                        columnConfig: columnConfig
+                    });
+
+                    popup = new GeoExt.Popup({
+                        id: 'identify-popup-window',
+                        anchored: false,
+                        layout: 'fit',
+                        map: CONFIG.mapPanel.map,
+                        unpinnable: true,
+                        minWidth: 400,
+                        minHeight: 200,
+                        title: '',
+                        items: [featureGrid],
+                        listeners: {
+                            show: function() {
+                                // Remove the anchor element (setting anchored to
+                                // false does not do this for us. *Shaking fist @ GeoExt)
+                                Ext.select('.gx-popup-anc').remove();
+                                this.syncSize();
+                                this.setHeight(featureGrid.getHeight());
+                                this.setHeight(featureGrid.getWidth());
+                            }
                         }
-                    }
 
-                });
-                popup.show();
+                    });
+                    popup.show();
+                }
+                
             }
+        }
+        else if(bioDataFeatures.length){
+                var featureAttribs = bioDataFeatures[0].attributes;
+                var propGrid = new Ext.grid.PropertyGrid({
+                    height: 300,
+                    width: 300,
+                    source: featureAttribs
+                });
+
+                var attribWinId = 'data-attrib-window';
+                var existingAttribWin = Ext.getCmp(attribWinId);
+                if(existingAttribWin){
+                    existingAttribWin.close();
+                }
+
+                var attribWin = new Ext.Window({
+                   title: 'BioData Site Attributes',
+                   id: attribWinId,
+                   layout: 'fit',
+                   items : [propGrid]
+                });
+
+                attribWin.show();
+        }
     },
     getClipValueForZoom: function(zoom) {
         return this.streamOrderClipValues[zoom];
