@@ -101,7 +101,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         hucLayer.id = 'huc-feature-layer';
         
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
-               CONFIG.endpoint.bioDataGeoserverProxy  + 'wms/',
+               CONFIG.endpoint.bioDataGeoserverProxy  + 'wms',
                 {
                         layers: 'BioData:SiteInfo',
                         transparent: true,
