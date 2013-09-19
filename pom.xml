@@ -5,7 +5,7 @@
 	<groupId>gov.usgs.cida.nwc</groupId>
 	<artifactId>nwc-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.0.2-SNAPSHOT</version>
+	<version>1.0.0.2</version>
 
 	<name>National Water Census</name>
 
