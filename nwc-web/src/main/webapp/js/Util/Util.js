@@ -18,7 +18,16 @@ NWCUI.util.wrapEachWithKey = function(array, key){
          return obj;
     });
 };
-
+/**
+ * Labels on ajax call objects permit a general callback function to execute
+ * specific behavior pertinent to the specific label of the request.
+ * 
+ * @param {String} label The value to put in the 'label' property of the jqXHR 
+ * object available to the callbacks.
+ * @param {String} url
+ * @param {Object} ajaxOptions any standard jQuery ajax options
+ * @returns {Object} jQuery ajax object with an additional 'label' property.
+ */
 NWCUI.util.makeLabeledAjaxCall = function(label, url, ajaxOptions){
         var call = $.ajax(url, ajaxOptions);
         call.label = label;
