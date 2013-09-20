@@ -10,7 +10,7 @@ NWCUI.data.parseSosResponse = function(response){
   
 };
 NWCUI.data.parseSosResponseValues = function(valuesTxt){
-    valuesTxt = valuesTxt.slice(0, valuesTxt.length-2);//kill terminal ' \n'
+    valuesTxt = valuesTxt.slice(0, valuesTxt.length-2);//kill terminal space and newline (' \n')
     var rows = valuesTxt.split(' ');
     var finalRows = [];
     var nonNanHasBeenFound = false;
