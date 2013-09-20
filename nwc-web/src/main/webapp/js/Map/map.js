@@ -107,7 +107,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         transparent: true,
                 }, {
                         opacity: 0.3,
-                        isBaseLayer : false
+                        isBaseLayer : false,
+                        visibility: false
         });
         bioDataSitesLayer.id = 'biodata-sites-feature-layer';
         
