@@ -206,12 +206,14 @@
                             <include>target/nwc-web/js/openlayers/OpenLayers.js</include>
                             <!-- skipped some openlayers extensions: raster and flowlines -->
                             <include>target/nwc-web/js/geoext/GeoExt.js</include>
+                            <include>target/nwc-web/js/Util/Util.js</include>
+                            <include>target/nwc-web/js/Data/SosSources.js</include>
 
                         <!-- </dependencies of code being tested> -->
 
                         <!-- <actual code being tested -->
-                            <include>target/nwc-web/js/Util/Util.js</include>
                             <include>target/nwc-web/js/Data/ParseSosResponse.js</include>
+                            <include>target/nwc-web/js/Data/DataSeriesStore.js</include>
                             <include>target/nwc-web/js/Data/StatsStore.js</include>
                         <!-- </actual code being tested -->
 
