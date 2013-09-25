@@ -50,16 +50,25 @@ describe('DataSeriesStore', function(){
     };
 
     var dss = new NWCUI.data.DataSeriesStore(dataSeries);
-    //give functions inside describe block access to the 
+    //give functions inside describe block access to the test data via closure
     beforeEach(function (){
         dss = dss;
         dataSeries=dataSeries;
     });    
     describe('DataSeriesStore#updateMonthlySeries', function(){
-            var me = it('should handle the case that the period of record ends on the last day of a month', function(){
-                expect(dss.monthly.data.length).toBe(1);
-                expect(dss.monthly.data[0][1]).toBe(31);
-                expect(dss.monthly.data[0][2]).toBe(1);
-            });
+        it('should handle the case that the period of record ends on the last day of a month', function(){
+            expect(dss.monthly.data.length).toBe(1);
         });
+        it('should correctly acummulate eta and join it to monthly eta', function(){
+            expect(dss.monthly.data[0][1]).toBe(31);
+            expect(dss.monthly.data[0][2]).toBe(1);
+        });
+        it('should not include an incomplete final month in the aggregation', function(){
+            var incompleteDaymetDataSeries = Object.clone(dataSeries, true);
+            //remove the last entry of the month
+            incompleteDaymetDataSeries.dayMet.data = incompleteDaymetDataSeries.dayMet.data.to(incompleteDaymetDataSeries.dayMet.data.length-1);
+            var incompleteDss = new NWCUI.data.DataSeriesStore(incompleteDaymetDataSeries);
+            expect(incompleteDss.monthly.data.length).toBe(0);
+        });
+    });
 });
