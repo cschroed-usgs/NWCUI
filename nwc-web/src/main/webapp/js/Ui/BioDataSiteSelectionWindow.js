@@ -104,7 +104,14 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
             xtype: 'button',
             icon: 'js/ext/ux/notify/images/info.gif',
             handler: function(){
-                Ext.Msg.alert('Information', 'In order to open BioData with your preselected sites, disable popup-blocking for this web site.');
+                var msg = 'In order to open BioData with your preselected sites, disable popup-blocking for this web site.';
+                        Ext.Msg.show({
+                            title: 'Information',
+                            msg: msg,
+                            buttons: Ext.Msg.OK,
+                            icon: Ext.MessageBox.QUESTION,
+                            minWidth: 300
+                        });
             }
         };
         var windowConfig = Ext.apply({
