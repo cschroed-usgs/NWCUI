@@ -120,6 +120,7 @@
         <script type="text/javascript" src="js/Ui/SeriesToggleToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleMenu.js"></script>
         <script type="text/javascript" src="js/Ui/ViewComboBox.js"></script>
+        <script type="text/javascript" src="js/Ui/BiodataSiteSelectionWindow.js"></script>
         <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>

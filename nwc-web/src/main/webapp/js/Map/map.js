@@ -101,15 +101,16 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         hucLayer.id = 'huc-feature-layer';
         
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
-               CONFIG.endpoint.bioDataGeoserverProxy  + 'wms',
-                {
-                        layers: 'BioData:SiteInfo',
-                        transparent: true,
-                }, {
-                        opacity: 0.3,
-                        isBaseLayer : false,
-                        visibility: false
-        });
+            CONFIG.endpoint.bioDataGeoserverProxy  + 'wms',
+             {
+                     layers: 'BioData:SiteInfo',
+                     transparent: true
+             }, {
+                     opacity: 0.3,
+                     isBaseLayer : false,
+                     visibility: false
+             }
+        );
         bioDataSitesLayer.id = 'biodata-sites-feature-layer';
         
         mapLayers.push(hucLayer);
@@ -117,7 +118,25 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(flowlineRaster);
-
+        var getFeatureControl = new OpenLayers.Control.GetFeature({
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                url:  CONFIG.endpoint.bioDataGeoserverProxy + 'wfs',
+                featureType: 'SiteInfo',
+                featureNS: 'gov.usgs.biodata.aquatic',
+                srsName: 'EPSG:900913'
+            }),
+            box: true,
+            autoActivate: true
+        });
+        getFeatureControl.events.register('featuresselected', self, function(e){
+            var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BiodataSiteSelectionWindow.id);
+            if (existingSelectionWindow) {
+                existingSelectionWindow.close();
+            }
+            var siteSelectionWin = new NWCUI.ui.BiodataSiteSelectionWindow({features: e.features});
+            siteSelectionWin.show();
+        });
         // MAP
         this.map = new OpenLayers.Map({
             restrictedExtent: this.restrictedMapExtent,
@@ -133,7 +152,9 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.LayerSwitcher({
                     roundedCorner: true
                 }),
-                new OpenLayers.Control.Zoom()
+                new OpenLayers.Control.Zoom(),
+                getFeatureControl
+                
             ],
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
@@ -269,8 +290,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                hucLayer,
-                bioDataSitesLayer
+                hucLayer
             ],
             queryVisible: true,
             output: 'object',
