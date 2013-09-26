@@ -101,7 +101,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         hucLayer.id = 'huc-feature-layer';
         
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
-            CONFIG.endpoint.bioDataGeoserverProxy  + 'wms',
+            CONFIG.endpoint.geoserver + 'wms',
              {
                      layers: 'BioData:SiteInfo',
                      transparent: true
@@ -121,7 +121,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var getFeatureControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.1.0",
-                url:  CONFIG.endpoint.bioDataGeoserverProxy + 'wfs',
+                url:  CONFIG.endpoint.geoserver + 'wfs',
                 featureType: 'SiteInfo',
                 featureNS: 'gov.usgs.biodata.aquatic',
                 srsName: 'EPSG:900913'
@@ -130,11 +130,11 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             autoActivate: true
         });
         getFeatureControl.events.register('featuresselected', self, function(e){
-            var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BiodataSiteSelectionWindow.id);
+            var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BioDataSiteSelectionWindow.id);
             if (existingSelectionWindow) {
                 existingSelectionWindow.close();
             }
-            var siteSelectionWin = new NWCUI.ui.BiodataSiteSelectionWindow({features: e.features});
+            var siteSelectionWin = new NWCUI.ui.BioDataSiteSelectionWindow({features: e.features});
             siteSelectionWin.show();
         });
         // MAP

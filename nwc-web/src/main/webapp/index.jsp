@@ -106,7 +106,7 @@
             };
             CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
-
+            CONFIG.bioDataSiteSelectionDoc = undefined;//loaded asynchronously later
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
@@ -120,7 +120,7 @@
         <script type="text/javascript" src="js/Ui/SeriesToggleToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleMenu.js"></script>
         <script type="text/javascript" src="js/Ui/ViewComboBox.js"></script>
-        <script type="text/javascript" src="js/Ui/BiodataSiteSelectionWindow.js"></script>
+        <script type="text/javascript" src="js/Ui/BioDataSiteSelectionWindow.js"></script>
         <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
@@ -149,5 +149,8 @@
             <input type ="submit"/>
         </form>
         <iframe name="download_iframe" id="download" style="display: none;"></iframe>
+        <form id="bioData_form" style="display:none" method="POST" action="https://aquatic.biodata.usgs.gov/restoreCriteria.action" target="_blank">
+            <input type="hidden" name="currentQuery"/>
+        </form>
     </body>
 </html>
