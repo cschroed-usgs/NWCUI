@@ -18,6 +18,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         huc12Area: 'ACRES',
         huc12Name: 'HU_12_NAME'
     },
+    dynamicControls: {
+        hucs: undefined,
+        bioDataSites: undefined,
+    },
     constructor: function(config) {
         var self = this;
         LOG.debug('map.js::constructor()');
@@ -118,7 +122,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(flowlineRaster);
-        var getFeatureControl = new OpenLayers.Control.GetFeature({
+        var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.1.0",
                 url:  CONFIG.endpoint.geoserver + 'wfs',
@@ -127,9 +131,9 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 srsName: 'EPSG:900913'
             }),
             box: true,
-            autoActivate: true
+            id: 'bioDataSites'
         });
-        getFeatureControl.events.register('featuresselected', self, function(e){
+        bioDataGetFeatureControl.events.register('featuresselected', self, function(e){
             var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BioDataSiteSelectionWindow.id);
             if (existingSelectionWindow) {
                 existingSelectionWindow.close();
@@ -137,8 +141,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var siteSelectionWin = new NWCUI.ui.BioDataSiteSelectionWindow({features: e.features});
             siteSelectionWin.show();
         });
+        self.dynamicControls.bioDataSites = bioDataGetFeatureControl;
+        
         // MAP
-        this.map = new OpenLayers.Map({
+        self.map = new OpenLayers.Map({
             restrictedExtent: this.restrictedMapExtent,
             projection: this.WGS84_GOOGLE_MERCATOR,
             controls: [
@@ -152,13 +158,47 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.LayerSwitcher({
                     roundedCorner: true
                 }),
-                new OpenLayers.Control.Zoom(),
-                getFeatureControl
+                new OpenLayers.Control.Zoom()
                 
             ],
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
             }
+        });
+        self.map.events.register('changelayer', null, function(evt){
+            if('visibility' === evt.property){
+               var map = evt.object;
+               if(bioDataSitesLayer.id === evt.layer.id){
+                   if(evt.layer.visibility){//if turning on biodata sites layer
+                       if(map.getLayer(hucLayer.id).visibility) {
+                            map.removeControl(self.dynamicControls.hucs);
+                       }
+                       map.addControl(self.dynamicControls.bioDataSites);
+                   }
+                   else{//if turning off biodata sites layer
+                        map.removeControl(self.dynamicControls.bioDataSites);
+                        if( map.getLayer(hucLayer.id).visibility &&
+                            null === map.getControl('hucs')) {
+                            map.addControl(self.dynamicControls.hucs);
+                        }
+                   }
+               }
+               else if(hucLayer.id === evt.layer.id){
+                   if(evt.layer.visibility){//if turning on huc layer
+                        if (map.getLayer(bioDataSitesLayer.id).visibility) {
+                            map.removeControl(self.dynamicControls.bioDataSites);
+                        }
+                        map.addControl(self.dynamicControls.hucs);
+                   }
+                   else{//if turning off huc layer
+                        map.removeControl(self.dynamicControls.hucs);
+                        if (map.getLayer(bioDataSitesLayer.id).visibility &&
+                            null === map.getControl('bioDataSites')) {
+                            map.addControl(self.dynamicControls.bioDataSites);
+                        }
+                   }
+               }
+           }
         });
         config = Ext.apply({
             id: 'map-panel',
@@ -285,10 +325,9 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         LOG.info('map.js::constructor(): Construction complete.');
 
-        this.wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+        var hucsGetFeatureInfoControl =new OpenLayers.Control.WMSGetFeatureInfo({
             title: 'gage-identify-control',
             hover: false,
-            autoActivate: true,
             layers: [
                 hucLayer
             ],
@@ -298,10 +337,13 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             infoFormat: 'application/vnd.ogc.gml',
             vendorParams: {
                 radius: 5
-            }
+            },
+            id: 'hucs'
         });
-        this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
-        this.map.addControl(this.wmsGetFeatureInfoControl);
+        hucsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
+        self.dynamicControls.hucs = hucsGetFeatureInfoControl;
+        this.map.addControl(hucsGetFeatureInfoControl);
+        hucsGetFeatureInfoControl.activate();
 },
     showAttributionSplash: function(){
         var slogan = 'Data furnished by the USGS and WaterSMART.';
