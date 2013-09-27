@@ -474,8 +474,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     sosSuccess: function(windowTitle, allAjaxResponseArgs){
         var self = this,
             errorsFound = false,
-            labeledResponses = {};
-    
+            labeledResponses = {},
+            labeledRawValues = {};
         $.each(allAjaxResponseArgs, function(index, ajaxResponseArgs){
             var response = ajaxResponseArgs[0];
             if(null === response){
@@ -488,13 +488,15 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 //by makeLabeledAjaxCall
                     var jqXHR = ajaxResponseArgs[2],
                     label = jqXHR.label;
-                    var values = NWCUI.data.parseSosResponse(response);
+                    var rawValues = NWCUI.data.getValuesFromSosResponse(response);
+                    var parsedValues = NWCUI.data.parseSosResponseValues(rawValues);
+                    labeledRawValues[label] = rawValues;
                     var labeledResponse = {
                         metadata: {
                             seriesName: NWCUI.data.SosSources[label].observedProperty,
                             seriesUnits: NWCUI.data.SosSources[label].units
                         },
-                        data: values
+                        data: parsedValues
                     };
                     labeledResponses[label] = labeledResponse;
             }
@@ -513,7 +515,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var win = new NWCUI.ui.DataWindow({
                 id: 'data-display-window',
                 title: windowTitle,
-                dataSeriesStore: dataSeriesStore
+                dataSeriesStore: dataSeriesStore,
+                labeledRawValues: labeledRawValues
             });
             win.show();
             win.center();

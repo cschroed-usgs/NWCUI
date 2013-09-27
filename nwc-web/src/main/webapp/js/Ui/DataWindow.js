@@ -5,7 +5,7 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
         var self = this;
         var title = config.title || "";
         var width = config.width || 1000;
-        var height = config.height || 400;
+        var height = config.height || 450;
         self.defaultSeries = 'monthly';
         self.dataSeriesStore = config.dataSeriesStore || {};
         self.toggleBar = new NWCUI.ui.SeriesToggleToolbar({window: self});
@@ -21,6 +21,7 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
             collapsible: true,
             layout : 'hbox',
             items: [self.graphPanel, self.labelPanel],
+            bbar: new NWCUI.ui.DataExportToolbar(),
             listeners:{
                 afterrender: function(window){
                     var graphDiv = window.graphPanel.getEl().dom;
