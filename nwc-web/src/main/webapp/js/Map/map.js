@@ -122,27 +122,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(flowlineRaster);
-        var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
-            protocol: new OpenLayers.Protocol.WFS({
-                version: "1.1.0",
-                url:  CONFIG.endpoint.geoserver + 'wfs',
-                featureType: 'SiteInfo',
-                featureNS: 'gov.usgs.biodata.aquatic',
-                srsName: 'EPSG:900913'
-            }),
-            box: true,
-            id: 'bioDataSites'
-        });
-        bioDataGetFeatureControl.events.register('featuresselected', self, function(e){
-            var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BioDataSiteSelectionWindow.id);
-            if (existingSelectionWindow) {
-                existingSelectionWindow.close();
-            }
-            var siteSelectionWin = new NWCUI.ui.BioDataSiteSelectionWindow({features: e.features});
-            siteSelectionWin.show();
-        });
-        self.dynamicControls.bioDataSites = bioDataGetFeatureControl;
-        
         // MAP
         self.map = new OpenLayers.Map({
             restrictedExtent: this.restrictedMapExtent,
@@ -171,30 +150,28 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                if(bioDataSitesLayer.id === evt.layer.id){
                    if(evt.layer.visibility){//if turning on biodata sites layer
                        if(map.getLayer(hucLayer.id).visibility) {
-                            map.removeControl(self.dynamicControls.hucs);
+                            self.dynamicControls.hucs.deactivate();
                        }
-                       map.addControl(self.dynamicControls.bioDataSites);
+                       self.dynamicControls.bioDataSites.activate();
                    }
                    else{//if turning off biodata sites layer
-                        map.removeControl(self.dynamicControls.bioDataSites);
-                        if( map.getLayer(hucLayer.id).visibility &&
-                            null === map.getControl('hucs')) {
-                            map.addControl(self.dynamicControls.hucs);
+                        self.dynamicControls.bioDataSites.deactivate();
+                        if( map.getLayer(hucLayer.id).visibility) {
+                            self.dynamicControls.hucs.activate();
                         }
                    }
                }
                else if(hucLayer.id === evt.layer.id){
                    if(evt.layer.visibility){//if turning on huc layer
                         if (map.getLayer(bioDataSitesLayer.id).visibility) {
-                            map.removeControl(self.dynamicControls.bioDataSites);
+                            self.dynamicControls.bioDataSites.deactivate();
                         }
-                        map.addControl(self.dynamicControls.hucs);
+                        self.dynamicControls.hucs.activate();
                    }
                    else{//if turning off huc layer
-                        map.removeControl(self.dynamicControls.hucs);
-                        if (map.getLayer(bioDataSitesLayer.id).visibility &&
-                            null === map.getControl('bioDataSites')) {
-                            map.addControl(self.dynamicControls.bioDataSites);
+                        self.dynamicControls.hucs.deactivate();
+                        if (map.getLayer(bioDataSitesLayer.id).visibility) {
+                            self.dynamicControls.bioDataSites.activate();
                         }
                    }
                }
@@ -344,6 +321,29 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         self.dynamicControls.hucs = hucsGetFeatureInfoControl;
         this.map.addControl(hucsGetFeatureInfoControl);
         hucsGetFeatureInfoControl.activate();
+        
+                var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                url:  CONFIG.endpoint.geoserver + 'wfs',
+                featureType: 'SiteInfo',
+                featureNS: 'gov.usgs.biodata.aquatic',
+                srsName: 'EPSG:900913'
+            }),
+            box: true,
+            id: 'bioDataSites'
+        });
+        bioDataGetFeatureControl.events.register('featuresselected', self, function(e){
+            var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BioDataSiteSelectionWindow.id);
+            if (existingSelectionWindow) {
+                existingSelectionWindow.close();
+            }
+            var siteSelectionWin = new NWCUI.ui.BioDataSiteSelectionWindow({features: e.features});
+            siteSelectionWin.show();
+        });
+        self.dynamicControls.bioDataSites = bioDataGetFeatureControl;
+        self.map.addControl(bioDataGetFeatureControl);
+        
 },
     showAttributionSplash: function(){
         var slogan = 'Data furnished by the USGS and WaterSMART.';
