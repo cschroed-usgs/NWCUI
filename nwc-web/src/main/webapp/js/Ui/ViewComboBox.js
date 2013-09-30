@@ -2,19 +2,19 @@ Ext.ns("NWCUI.ui");
 NWCUI.ui.ViewComboBoxMixin = function(){
     var self = this;
     self.constructor = function(config){
-        var window = config.window;
+        var win = config.window;
         var comboStoreData = [];
         var handler = function(combo, record, index){
-            window.graphPanel.graph.destroy();
-            var graphDiv = window.graphPanel.getEl().dom;
-            var legendDiv = window.labelPanel.getEl().dom;
-            var values = window.dataSeriesStore[record.get('viewId')].data;
-            var labels = window.dataSeriesStore[record.get('viewId')].metadata.seriesLabels;
+            win.graphPanel.graph.destroy();
+            var graphDiv = win.graphPanel.getEl().dom;
+            var legendDiv = win.labelPanel.getEl().dom;
+            var values = win.dataSeriesStore[record.get('viewId')].data;
+            var labels = win.dataSeriesStore[record.get('viewId')].metadata.seriesLabels;
             var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, values, labels);
-            window.doLayout();
-            window.graphPanel.graph = graph;
+            win.doLayout();
+            win.graphPanel.graph = graph;
         };
-        Ext.iterate(window.dataSeriesStore, function(key, value){
+        Ext.iterate(win.dataSeriesStore, function(key, value){
             comboStoreData.push([key, key.capitalize()]);
         });
         var comboStore = new Ext.data.ArrayStore({
@@ -29,7 +29,7 @@ NWCUI.ui.ViewComboBoxMixin = function(){
             displayField: 'displayText',
             triggerAction: 'all',
             forceSelection: true,
-            emptyText: window.defaultSeries.capitalize(),
+            emptyText: win.defaultSeries.capitalize(),
             listeners: {
                 select: handler
             }
