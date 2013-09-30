@@ -67,37 +67,37 @@ NWCUI.data.DataSeriesStore = function(series){
             monthlyAccumulation = 0,
             firstMonthOfPeriodOfRecord = true,
             monthDateStr = '',//stored at the beginning of every month, used later once the totals have been accumulated for the month
+            endOfMonth,//stores the end of the current month of iteration
             etaSeries = series.eta;
-    
+            
+            
         Ext.each(dayMetSeries.data, function(dayMetRow){
             var dayMetDateStr = dayMetRow[0],
                 dayMetValue = dayMetRow[1],
                 dayIndexInString = dayMetDateStr.lastIndexOf('/') + 1,
-                dayMetDay = dayMetDateStr.substr(dayIndexInString, 2);
-            if('01' === dayMetDay){
-                if(firstMonthOfPeriodOfRecord){
-                    firstMonthOfPeriodOfRecord = false;
-                }
-                else{
-                    //join the date, accumulation and the eta for last month
-                    var etaRow = etaSeries.data[etaIndex];
-                    if(etaRow){
-                        var etaDateStr = etaRow[0];
-                        var etaValue = etaRow[1];
-                        if(etaDateStr === monthDateStr){
-                            etaForCurrentMonth = etaValue;
-                            etaIndex++;
-                        }
-                    }//else we have fallen off the end of the eta array
-                    var date = new Date(monthDateStr);
-                    monthlyTable.push([date, monthlyAccumulation, etaForCurrentMonth]);
-                    monthlyAccumulation = 0;
-                }
+                dayMetDay = Number(dayMetDateStr.substr(dayIndexInString, 2));
+            if(undefined === endOfMonth){
+                endOfMonth = Date.create(dayMetDateStr).daysInMonth();
                 monthDateStr = dayMetDateStr;
             }
-            
             monthlyAccumulation = (monthlyAccumulation + dayMetValue).round(9);//minimize floating-point errors from accumulating
-
+            if(dayMetDay === endOfMonth){
+                //join the date, accumulation and the eta for last month
+                var etaRow = etaSeries.data[etaIndex];
+                if(etaRow){
+                    var etaDateStr = etaRow[0];
+                    var etaValue = etaRow[1];
+                    if(etaDateStr === monthDateStr){
+                        etaForCurrentMonth = etaValue;
+                        etaIndex++;
+                    }
+                }//else we have fallen off the end of the eta array
+                var date = new Date(monthDateStr);
+                monthlyTable.push([date, monthlyAccumulation, etaForCurrentMonth]);
+                //reset for the next months
+                monthlyAccumulation = 0;
+                endOfMonth = undefined;
+            }
         });
         self.monthly.data = monthlyTable;
 
