@@ -1,14 +1,31 @@
 Ext.ns('NWCUI.data');
+/**
+ * 
+ * @param {XMLHttpResponse} Sos GetObservation ajax response
+ * @returns {Array} a table of native data type results
+ */
 NWCUI.data.parseSosResponse = function(response){
-    
-        var valuesTxt = $(response).find('swe\\:values').text();
-        if (0 === valuesTxt.length){
-            valuesTxt = $(response).find('values').text();
-        }
-        return NWCUI.data.parseSosResponseValues(valuesTxt);
-  //@todo call parseSosResponseText
-  
+        return NWCUI.data.parseSosResponseValues(
+            NWCUI.data.getValuesFromSosResponse(response)
+        );
 };
+/**
+ * 
+ * @param {XMLHttpResponse} Sos GetObservation ajax response
+ * @returns {String} the values inside of the swe:values element
+ */
+NWCUI.data.getValuesFromSosResponse = function(response){
+    var valuesTxt = $(response).find('swe\\:values').text();
+    if (0 === valuesTxt.length){
+        valuesTxt = $(response).find('values').text();
+    }
+    return valuesTxt;
+};
+/**
+ * 
+ * @param {String} valuesTxt the csv contained inside of the swe:values element of the GetObservation Response
+ * @returns {Array} a table of native data type results
+ */
 NWCUI.data.parseSosResponseValues = function(valuesTxt){
     valuesTxt = valuesTxt.slice(0, valuesTxt.length-2);//kill terminal space and newline (' \n')
     var rows = valuesTxt.split(' ');
