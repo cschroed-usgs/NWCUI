@@ -30,9 +30,6 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
 
         var featureGrid = new Ext.grid.GridPanel({
             store: siteFeatureStore,
-//            autoHeight: true,
-//            deferRowRender: false,
-//            forceLayout: true,
             sm: featureSelectionModel,
             viewConfig: {
                 autoFill: true,

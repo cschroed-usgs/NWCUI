@@ -322,7 +322,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(hucsGetFeatureInfoControl);
         hucsGetFeatureInfoControl.activate();
         
-                var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
+        var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.1.0",
                 url:  CONFIG.endpoint.geoserver + 'wfs',

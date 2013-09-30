@@ -34,13 +34,3 @@ NWCUI.util.makeLabeledAjaxCall = function(label, url, ajaxOptions){
         call.url = url;
         return call;
 };
-
-/**
- * @param {String} xmlStr - a plain xml string
- * @returns {String} a string whose special characters ('<','&', etc.) have been
- * character encoded so that it is safe to insert them in places like the *value*
- * attribute of an *input* element.
- */
-NWCUI.util.characterEncodeXml = function(xmlStr) {
-    return $('<div/>').text(xmlStr).html();
-  };
