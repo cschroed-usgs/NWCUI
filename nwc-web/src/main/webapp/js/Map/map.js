@@ -18,6 +18,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         huc12Area: 'ACRES',
         huc12Name: 'HU_12_NAME'
     },
+    dynamicControls: {
+        hucs: undefined,
+        bioDataSites: undefined,
+    },
     constructor: function(config) {
         var self = this;
         LOG.debug('map.js::constructor()');
@@ -101,15 +105,16 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         hucLayer.id = 'huc-feature-layer';
         
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
-               CONFIG.endpoint.bioDataGeoserverProxy  + 'wms',
-                {
-                        layers: 'BioData:SiteInfo',
-                        transparent: true,
-                }, {
-                        opacity: 0.3,
-                        isBaseLayer : false,
-                        visibility: false
-        });
+            CONFIG.endpoint.geoserver + 'wms',
+             {
+                     layers: 'BioData:SiteInfo',
+                     transparent: true
+             }, {
+                     opacity: 0.3,
+                     isBaseLayer : false,
+                     visibility: false
+             }
+        );
         bioDataSitesLayer.id = 'biodata-sites-feature-layer';
         
         mapLayers.push(hucLayer);
@@ -117,9 +122,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
         mapLayers.push(flowlineRaster);
-
         // MAP
-        this.map = new OpenLayers.Map({
+        self.map = new OpenLayers.Map({
             restrictedExtent: this.restrictedMapExtent,
             projection: this.WGS84_GOOGLE_MERCATOR,
             controls: [
@@ -134,10 +138,44 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     roundedCorner: true
                 }),
                 new OpenLayers.Control.Zoom()
+                
             ],
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
             }
+        });
+        self.map.events.register('changelayer', null, function(evt){
+            if('visibility' === evt.property){
+               var map = evt.object;
+               if(bioDataSitesLayer.id === evt.layer.id){
+                   if(evt.layer.visibility){//if turning on biodata sites layer
+                       if(map.getLayer(hucLayer.id).visibility) {
+                            self.dynamicControls.hucs.deactivate();
+                       }
+                       self.dynamicControls.bioDataSites.activate();
+                   }
+                   else{//if turning off biodata sites layer
+                        self.dynamicControls.bioDataSites.deactivate();
+                        if( map.getLayer(hucLayer.id).visibility) {
+                            self.dynamicControls.hucs.activate();
+                        }
+                   }
+               }
+               else if(hucLayer.id === evt.layer.id){
+                   if(evt.layer.visibility){//if turning on huc layer
+                        if (map.getLayer(bioDataSitesLayer.id).visibility) {
+                            self.dynamicControls.bioDataSites.deactivate();
+                        }
+                        self.dynamicControls.hucs.activate();
+                   }
+                   else{//if turning off huc layer
+                        self.dynamicControls.hucs.deactivate();
+                        if (map.getLayer(bioDataSitesLayer.id).visibility) {
+                            self.dynamicControls.bioDataSites.activate();
+                        }
+                   }
+               }
+           }
         });
         config = Ext.apply({
             id: 'map-panel',
@@ -264,13 +302,11 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         LOG.info('map.js::constructor(): Construction complete.');
 
-        this.wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+        var hucsGetFeatureInfoControl =new OpenLayers.Control.WMSGetFeatureInfo({
             title: 'gage-identify-control',
             hover: false,
-            autoActivate: true,
             layers: [
-                hucLayer,
-                bioDataSitesLayer
+                hucLayer
             ],
             queryVisible: true,
             output: 'object',
@@ -278,10 +314,36 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             infoFormat: 'application/vnd.ogc.gml',
             vendorParams: {
                 radius: 5
-            }
+            },
+            id: 'hucs'
         });
-        this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
-        this.map.addControl(this.wmsGetFeatureInfoControl);
+        hucsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
+        self.dynamicControls.hucs = hucsGetFeatureInfoControl;
+        this.map.addControl(hucsGetFeatureInfoControl);
+        hucsGetFeatureInfoControl.activate();
+        
+                var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                url:  CONFIG.endpoint.geoserver + 'wfs',
+                featureType: 'SiteInfo',
+                featureNS: 'gov.usgs.biodata.aquatic',
+                srsName: 'EPSG:900913'
+            }),
+            box: true,
+            id: 'bioDataSites'
+        });
+        bioDataGetFeatureControl.events.register('featuresselected', self, function(e){
+            var existingSelectionWindow = Ext.getCmp(NWCUI.ui.BioDataSiteSelectionWindow.id);
+            if (existingSelectionWindow) {
+                existingSelectionWindow.close();
+            }
+            var siteSelectionWin = new NWCUI.ui.BioDataSiteSelectionWindow({features: e.features});
+            siteSelectionWin.show();
+        });
+        self.dynamicControls.bioDataSites = bioDataGetFeatureControl;
+        self.map.addControl(bioDataGetFeatureControl);
+        
 },
     showAttributionSplash: function(){
         var slogan = 'Data furnished by the USGS and WaterSMART.';
