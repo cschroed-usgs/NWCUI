@@ -6,9 +6,26 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
         var exportHandler = function(button, event){
 
             var win = button.findParentByType('dataWindow');
+            var csvHeaderRow = 'Date and Time (ISO 8601),';
+
             var rawValueKey = button.rawValueKey;
+            //prepare column headers
+            var rawKeyValueToUnitsMap = {
+                dayMet: 'Precipitation (mm/day)',
+                eta: 'Evapotranspiration (mm/month)'
+            };
+            var unitString = rawKeyValueToUnitsMap[rawValueKey];
+            if(undefined === unitString){
+                NWCUI.ui.errorNotify('Error during export -- unknown raw value key used for unit string lookup');
+                unitString = ' ';
+            }
+            csvHeaderRow += unitString + '\n';
+            //prepare data rows
             var rawValues = win.labeledRawValues[rawValueKey];
-            var formattedValues = escape(rawValues.replace(/ /g, ''));//replace trailing space on end of each row
+            var formattedValues = rawValues.replace(/ /g, '');//replace trailing space on end of each row
+            //assemble data rows and column headers
+            var formattedExport = escape(csvHeaderRow + formattedValues);
+
             var filename = win.title.length > 0 ? win.title : CONFIG.defaultExportFilename;
             filename = filename.replace(/ /g, '_');
             filename += '_' + rawValueKey;
@@ -17,7 +34,7 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             var type = 'text/csv';
             $('#filename_value').val(filename);
             $('#type_value').val(type);
-            $('#data_value').val(formattedValues);
+            $('#data_value').val(formattedExport);
             $('#download_form').submit();
         };
 
