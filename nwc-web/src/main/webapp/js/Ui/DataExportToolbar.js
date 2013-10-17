@@ -1,25 +1,25 @@
 Ext.ns("NWCUI.ui");
 
 NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
-    constructor: function(config) {
+    constructor: function (config) {
         var self = this;
-        var exportHandler = function(button, event){
+        var exportHandler = function (button, event) {
 
             var win = button.findParentByType('dataWindow');
             var csvHeaderRow = 'Date and Time (ISO 8601),';
 
             var rawValueKey = button.rawValueKey;
             //prepare column headers
-            var rawKeyValueToUnitsMap = {
+            var rawValueKeyToFieldLabelMap = {
                 dayMet: 'Precipitation (mm/day)',
                 eta: 'Evapotranspiration (mm/month)'
             };
-            var unitString = rawKeyValueToUnitsMap[rawValueKey];
-            if(undefined === unitString){
-                NWCUI.ui.errorNotify('Error during export -- unknown raw value key used for unit string lookup');
-                unitString = ' ';
+            var fieldLabel = rawValueKeyToFieldLabelMap[rawValueKey];
+            if (undefined === fieldLabel) {
+                NWCUI.ui.errorNotify('Error during export -- unknown raw value key used for field label lookup');
+                fieldLabel = ' ';
             }
-            csvHeaderRow += unitString + '\n';
+            csvHeaderRow += fieldLabel + '\n';
             //prepare data rows
             var rawValues = win.labeledRawValues[rawValueKey];
             var formattedValues = rawValues.replace(/ /g, '');//replace trailing space on end of each row
@@ -57,7 +57,7 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
         ];
 
         config = Ext.apply({
-            items : items,
+            items : items
         }, config);
 
         NWCUI.ui.DataExportToolbar.superclass.constructor.call(this, config);
