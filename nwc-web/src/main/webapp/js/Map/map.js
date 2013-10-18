@@ -137,8 +137,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.LayerSwitcher({
                     roundedCorner: true
                 }),
-                new OpenLayers.Control.Zoom()
-                
+                new OpenLayers.Control.Zoom(),
+                new OpenLayers.Control.CustomNavToolbar()
             ],
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
