@@ -100,6 +100,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         styles: ['polygon']
                 }, {
                         opacity: 0.3,
+                        displayInLayerSwitcher: false,
+                        visibility: false,
                         isBaseLayer : false
         });
         hucLayer.id = 'huc-feature-layer';
@@ -112,6 +114,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
              }, {
                      opacity: 0.3,
                      isBaseLayer : false,
+                     displayInLayerSwitcher: false,
                      visibility: false
              }
         );
@@ -143,39 +146,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
             }
-        });
-        self.map.events.register('changelayer', null, function(evt){
-            if('visibility' === evt.property){
-               var map = evt.object;
-               if(bioDataSitesLayer.id === evt.layer.id){
-                   if(evt.layer.visibility){//if turning on biodata sites layer
-                       if(map.getLayer(hucLayer.id).visibility) {
-                            self.dynamicControls.hucs.deactivate();
-                       }
-                       self.dynamicControls.bioDataSites.activate();
-                   }
-                   else{//if turning off biodata sites layer
-                        self.dynamicControls.bioDataSites.deactivate();
-                        if( map.getLayer(hucLayer.id).visibility) {
-                            self.dynamicControls.hucs.activate();
-                        }
-                   }
-               }
-               else if(hucLayer.id === evt.layer.id){
-                   if(evt.layer.visibility){//if turning on huc layer
-                        if (map.getLayer(bioDataSitesLayer.id).visibility) {
-                            self.dynamicControls.bioDataSites.deactivate();
-                        }
-                        self.dynamicControls.hucs.activate();
-                   }
-                   else{//if turning off huc layer
-                        self.dynamicControls.hucs.deactivate();
-                        if (map.getLayer(bioDataSitesLayer.id).visibility) {
-                            self.dynamicControls.bioDataSites.activate();
-                        }
-                   }
-               }
-           }
         });
         config = Ext.apply({
             id: 'map-panel',
