@@ -92,7 +92,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         gageFeatureLayer.id = 'gage-feature-layer';
 
-        var hucLayer = new OpenLayers.Layer.WMS("National WBD Smnapshot",
+        var hucLayer = new OpenLayers.Layer.WMS("National WBD Snapshot",
                 CONFIG.endpoint.geoserver + 'gwc/service/wms',
                 {
                         layers: 'NHDPlusHUCs:NationalWBDSnapshot',
