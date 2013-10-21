@@ -51,13 +51,22 @@
 .olControlWaterCensusToolbar .olControlDrawFeaturePathItemActive {
     background-position: -51px -24px;
 }
-.olControlWaterCensusToolbar .olControlHucSelectionToolItemInactive,
-.olControlWaterCensusToolbar .olControlBioSitesSelectionToolItemInactive,
+div.olControlHucSelectionToolItemInactive {
+    background-image: url("../images/hucInactive.png");
+}
+div.olControlBioSitesSelectionToolItemInactive {
+        background-image: url("../images/bioInactive.png");
+}
+div.olControlHucSelectionToolItemActive{
+        background-image: url("../images/hucActive.png");
+
+}
+div.olControlBioSitesSelectionToolItemActive{
+        background-image: url("../images/bioActive.png");
+}
 .olControlWaterCensusToolbar .olControlDrawFeaturePolygonItemInactive{
     background-position: -26px -1px;
 }
-.olControlWaterCensusToolbar .olControlHucSelectionToolItemActive,
-.olControlWaterCensusToolbar .olControlBioSitesSelectionToolItemActive,
 .olControlWaterCensusToolbar .olControlDrawFeaturePolygonItemActive {
     background-position: -26px -24px;
 }
