@@ -138,7 +138,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     roundedCorner: true
                 }),
                 new OpenLayers.Control.Zoom(),
-                new OpenLayers.Control.CustomNavToolbar()
+                new OpenLayers.Control.WaterCensusToolbar()
             ],
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
@@ -320,7 +320,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         hucsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         self.dynamicControls.hucs = hucsGetFeatureInfoControl;
         this.map.addControl(hucsGetFeatureInfoControl);
-        hucsGetFeatureInfoControl.activate();
         
         var bioDataGetFeatureControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({

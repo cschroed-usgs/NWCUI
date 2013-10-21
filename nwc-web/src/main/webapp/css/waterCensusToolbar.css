@@ -1,18 +1,18 @@
 /*
- * @src: http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css
+ * @inspiration: http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css
  */
 
 /**
  * Editing and navigation icons.
  * (using the editing_tool_bar.png sprint image)
  */
-.olControlNavToolbar ,
-.olControlEditingToolbar {
+
+.olControlWaterCensusToolbar {
     margin: 5px 5px 0 0;
 }
-.olControlNavToolbar div,
-.olControlEditingToolbar div {
-    background-image: url("js/openlayers/theme/default/img/editing_tool_bar.png");
+
+.olControlWaterCensusToolbar div {
+    background-image: url("../js/openlayers/theme/default/img/editing_tool_bar.png");
     background-repeat: no-repeat;
     margin: 0 0 5px 5px;
     width: 24px;
@@ -20,49 +20,45 @@
     cursor: pointer
 }
 /* positions */
-.olControlEditingToolbar {
-    right: 0;
-    top: 0;
-}
-.olControlNavToolbar {
-    top: 295px;
+.olControlWaterCensusToolbar {
+    top: 50%;
     left: 9px;
 }
-/* layouts */
-.olControlEditingToolbar div {
-    float: right;
-}
+
 /* individual controls */
-.olControlNavToolbar .olControlNavigationItemInactive,
-.olControlEditingToolbar .olControlNavigationItemInactive {
+
+.olControlWaterCensusToolbar .olControlNavigationItemInactive {
     background-position: -103px -1px;
 }
-.olControlNavToolbar .olControlNavigationItemActive ,
-.olControlEditingToolbar .olControlNavigationItemActive  {
+.olControlWaterCensusToolbar .olControlNavigationItemActive  {
     background-position: -103px -24px;
 }
-.olControlNavToolbar .olControlZoomBoxItemInactive {
+.olControlWaterCensusToolbar .olControlZoomBoxItemInactive {
     background-position: -128px -1px;
 }
-.olControlNavToolbar .olControlZoomBoxItemActive  {
+.olControlWaterCensusToolbar .olControlZoomBoxItemActive  {
     background-position: -128px -24px;
 }
-.olControlEditingToolbar .olControlDrawFeaturePointItemInactive {
+.olControlWaterCensusToolbar .olControlDrawFeaturePointItemInactive {
     background-position: -77px -1px;
 }
-.olControlEditingToolbar .olControlDrawFeaturePointItemActive {
+.olControlWaterCensusToolbar .olControlDrawFeaturePointItemActive {
     background-position: -77px -24px;
 }
-.olControlEditingToolbar .olControlDrawFeaturePathItemInactive {
+.olControlWaterCensusToolbar .olControlDrawFeaturePathItemInactive {
     background-position: -51px -1px;
 }
-.olControlEditingToolbar .olControlDrawFeaturePathItemActive {
+.olControlWaterCensusToolbar .olControlDrawFeaturePathItemActive {
     background-position: -51px -24px;
 }
-.olControlEditingToolbar .olControlDrawFeaturePolygonItemInactive{
+.olControlWaterCensusToolbar .olControlHucSelectionToolItemInactive,
+.olControlWaterCensusToolbar .olControlBioSitesSelectionToolItemInactive,
+.olControlWaterCensusToolbar .olControlDrawFeaturePolygonItemInactive{
     background-position: -26px -1px;
 }
-.olControlEditingToolbar .olControlDrawFeaturePolygonItemActive {
+.olControlWaterCensusToolbar .olControlHucSelectionToolItemActive,
+.olControlWaterCensusToolbar .olControlBioSitesSelectionToolItemActive,
+.olControlWaterCensusToolbar .olControlDrawFeaturePolygonItemActive {
     background-position: -26px -24px;
 }
 
