@@ -1,9 +1,5 @@
 OpenLayers.Control.WaterCensusToolbar = OpenLayers.Class(OpenLayers.Control.Panel, {
     /**
-     * Constructor: OpenLayers.Control.NavToolbar 
-     * Add our two mousedefaults controls.
-     *
-     * Parameters:
      * @param {Object} object an optional object whose properties will be used
      *     to extend the control.
      */
