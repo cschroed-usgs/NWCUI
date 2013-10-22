@@ -42,6 +42,15 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             '->',
             {
                 xtype: 'button',
+                text: 'Add Water Use Data',
+                handler: function(button, event){
+                    var window = button.findParentByType('dataWindow');
+                    window.collapse();
+                }
+            },
+            '-',
+            {
+                xtype: 'button',
                 text: 'Download ETa Data',
                 handler: exportHandler,
                 cls: 'export_button',
@@ -55,7 +64,8 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 rawValueKey: 'dayMet'//used in handler
             }
         ];
-
+        
+        
         config = Ext.apply({
             items : items
         }, config);

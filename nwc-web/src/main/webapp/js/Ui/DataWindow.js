@@ -31,6 +31,13 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
                     var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, values, labels);
                     window.doLayout();
                     self.graphPanel.graph = graph;
+                },
+                collapse: function(window){
+                    window.alignTo(Ext.get('nwcui-body-panel'), 'tl', [50, 0], true);
+                },
+                expand: function (window) {
+                    window.center();
+
                 }
             }
         }, config);

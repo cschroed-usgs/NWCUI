@@ -119,7 +119,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             }
         );
         countyLayer.id = 'county-feature-layer';
-   
+
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
             CONFIG.endpoint.geoserver + 'wms',
              {
@@ -645,7 +645,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
                 featureSelectionModel.on({
                     'rowselect' : {
-                        fn : function(obj, rowIndex, record) { self.displayDataWindow(record); },
+                        fn : function(obj, rowIndex, record) {
+                            self.displayDataWindow(record);
+                            Ext.getCmp('identify-popup-window').close();
+                        },
                         delay: 100
                      }
                  });
