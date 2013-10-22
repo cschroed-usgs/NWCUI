@@ -103,7 +103,23 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         isBaseLayer : false
         });
         hucLayer.id = 'huc-feature-layer';
-        
+
+        var countyLayer = new OpenLayers.Layer.WMS(
+            'Historical Counties',
+            CONFIG.endpoint.geoserver + 'ows',
+            {
+                layers: 'NWC:US_Historical_Counties',
+                transparent: true,
+                styles: ['polygon']
+            },
+            {
+                opacity: 0.3,
+                isBaseLayer: false,
+                displayInLayerSwitcher: false
+            }
+        );
+        countyLayer.id = 'county-feature-layer';
+   
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
             CONFIG.endpoint.geoserver + 'wms',
              {
@@ -118,6 +134,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         bioDataSitesLayer.id = 'biodata-sites-feature-layer';
         
         mapLayers.push(hucLayer);
+        mapLayers.push(countyLayer);
         mapLayers.push(bioDataSitesLayer);
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
