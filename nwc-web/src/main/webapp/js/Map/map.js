@@ -790,5 +790,26 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var map = CONFIG.mapPanel.map;
         map.addLayer(highlightedLayer);
         return highlightedLayer;
+    },
+    addCountySelectControl: function(options){
+        var self = this;
+        var layersToRemove = options.layersToDeletePostSelect;
+        var map = CONFIG.mapPanel.map;
+        var hucControl = self.dynamicControls.hucs;
+        var control = new OpenLayers.Control.SelectFeature(
+            {
+                onSelect: function(feature){
+                    console.dir(arguments);
+                    map.removeControl(control);
+                    hucControl.activate();
+                    layersToRemove.each(function(layer){
+                        map.removeLayer(layer);
+                    });
+                }
+            }
+        );
+        
+        hucControl.deactivate();
+        map.addControl(control);
     }
 });
