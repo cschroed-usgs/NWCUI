@@ -715,6 +715,12 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             }
         }
     },
+    /**
+     * @param {Openlayers.Geometry} geometry The geom of the huc that will be 
+     * used to search for intersections with the counties layer
+     * @returns {Openlayers.Layer.Vector} the vector layer containing the 
+     * intersecting counties
+     */
     addCountiesThatIntersectWith: function(geometry){
         LOG.debug('Adding Filtered Counties WFS layer based on HUC geometry');
         var self = this;
@@ -727,13 +733,19 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
             'Historical Counties',
             {   
                 opacity: 0.6,
+                displayInLayerSwitcher: false,
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 styleMap: new OpenLayers.StyleMap({
                     strokeWidth: 3,
                     strokeColor: '#333333',
                     fillColor: '#FF9900',
                     fillOpacity: 0.4,
-                    label: '${NAME}'
+                    label: '${NAME}',
+                    fontSize: '2em',
+                    fontWeight: 'bold',
+                    labelOutlineColor: "white",
+                    labelOutlineWidth: 1,
+                    labelAlign: 'cm'
                 }),
                 filter: intersectionFilter,
                 projection: new OpenLayers.Projection("EPSG:4326"),
@@ -752,5 +764,31 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         map.addLayer(intersectingCountiesLayer);
         var countiesExtent = intersectingCountiesLayer.getExtent();
         map.zoomToExtent(countiesExtent);
+        return intersectingCountiesLayer;
+    },
+    /**
+     * @param {OpenLayers.Feature.Vector} feature
+     * @returns {Openlayers.Layer.Vector} the vector layer added to the map.
+     */
+    addHighlightedFeature: function(feature){
+        var self = this;
+        var highlightedLayer = new OpenLayers.Layer.Vector(
+            'Highlighted HUC',
+            {
+                displayInLayerSwitcher: false,
+                isBaseLayer: false,
+                opacity: 0.6,
+                projection: new OpenLayers.Projection("EPSG:900913"),
+                style: {
+                    fillColor: '#00FF00'
+                }
+            }
+        );
+        highlightedLayer.addFeatures([feature]);
+        
+        highlightedLayer.id = 'highlighted-layer';
+        var map = CONFIG.mapPanel.map;
+        map.addLayer(highlightedLayer);
+        return highlightedLayer;
     }
 });
