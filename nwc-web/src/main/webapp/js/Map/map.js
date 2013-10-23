@@ -104,22 +104,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         hucLayer.id = 'huc-feature-layer';
 
-        var countyLayer = new OpenLayers.Layer.WMS(
-            'Historical Counties',
-            CONFIG.endpoint.geoserver + 'ows',
-            {
-                layers: 'NWC:US_Historical_Counties',
-                transparent: true,
-                styles: ['polygon']
-            },
-            {
-                opacity: 0.3,
-                isBaseLayer: false,
-                displayInLayerSwitcher: false
-            }
-        );
-        countyLayer.id = 'county-feature-layer';
-
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
             CONFIG.endpoint.geoserver + 'wms',
              {
@@ -134,7 +118,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         bioDataSitesLayer.id = 'biodata-sites-feature-layer';
         
         mapLayers.push(hucLayer);
-        mapLayers.push(countyLayer);
         mapLayers.push(bioDataSitesLayer);
         mapLayers.push(gageFeatureLayer);
         mapLayers.push(flowlinesData);
@@ -488,7 +471,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
             }
         },
-    sosSuccess: function(windowTitle, allAjaxResponseArgs){
+    sosSuccess: function(windowOptions, allAjaxResponseArgs){
+        var windowTitle = windowOptions.title;
         var self = this,
             errorsFound = false,
             labeledResponses = {},
@@ -529,12 +513,15 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 dataDisplayWindow.destroy();
             }
             var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
-            var win = new NWCUI.ui.DataWindow({
-                id: 'data-display-window',
-                title: windowTitle,
-                dataSeriesStore: dataSeriesStore,
-                labeledRawValues: labeledRawValues
-            });
+            var win = new NWCUI.ui.DataWindow(Object.merge(
+                    windowOptions,
+                    {
+                        id: 'data-display-window',
+                        dataSeriesStore: dataSeriesStore,
+                        labeledRawValues: labeledRawValues
+                    }
+                )
+            );
             win.show();
             win.center();
             win.toFront();
@@ -563,11 +550,17 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
      */
     displayDataWindow: function(record){
         var self = this;
+        var geom = record.getFeature().geometry;
         var offering = record.data[self.fieldNames.huc12Id];
         var huc12Name = record.data[self.fieldNames.huc12Name] || "";
         var huc12Id = record.data[self.fieldNames.huc12Id] || "";
         var title = huc12Name.length ? huc12Name + " - " : "";
         title += huc12Id;
+        
+        var windowOptions = {};
+        windowOptions.title = title;
+        windowOptions.feature = record.getFeature();
+        
         var labeledAjaxCalls = [];
         
         Ext.iterate(NWCUI.data.SosSources, function(sourceId, source){
@@ -581,7 +574,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
          * and injects the title into the real callback
          */
         var sosSuccessWrapper = function(){
-            self.sosSuccess(title, arguments);
+            self.sosSuccess(windowOptions, arguments);
         };
         //run all ajax calls and execute the callback 
         $.when.apply(self, labeledAjaxCalls).then(
@@ -752,5 +745,43 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 mapLayer.updateFromClipValue(val);
             }
         }
+    },
+    addCountiesThatIntersectWith: function(geometry){
+        LOG.debug('Adding Filtered Counties WFS layer based on HUC geometry');
+        var self = this;
+        var intersectionFilter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: 'the_geom',
+            value: geometry
+        });
+       var intersectingCountiesLayer = new OpenLayers.Layer.Vector(
+            'Historical Counties',
+            {   
+                opacity: 0.6,
+                strategies: [new OpenLayers.Strategy.BBOX()],
+                styleMap: new OpenLayers.StyleMap({
+                    strokeWidth: 3,
+                    strokeColor: '#333333',
+                    fillColor: '#FF9900',
+                    fillOpacity: 0.4,
+                    label: '${NAME}'
+                }),
+                filter: intersectionFilter,
+                projection: new OpenLayers.Projection("EPSG:4326"),
+                protocol: new OpenLayers.Protocol.WFS({
+                    version: '1.0.0',
+                    url: CONFIG.endpoint.geoserver + 'ows',
+                    featureType: "US_Historical_Counties",
+                    featureNS: 'http://cida.usgs.gov/nwc',
+                    geometryName: 'the_geom',
+                    srsName: 'EPSG:900913'
+                })
+            }
+        );
+        intersectingCountiesLayer.id = 'counties-feature-layer';
+        var map = CONFIG.mapPanel.map;
+        map.addLayer(intersectingCountiesLayer);
+        var countiesExtent = intersectingCountiesLayer.getExtent();
+        map.zoomToExtent(countiesExtent);
     }
 });

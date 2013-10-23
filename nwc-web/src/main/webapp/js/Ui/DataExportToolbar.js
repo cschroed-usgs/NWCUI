@@ -45,6 +45,9 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 text: 'Add Water Use Data',
                 handler: function(button, event){
                     var window = button.findParentByType('dataWindow');
+                    var feature = window.feature;
+                    CONFIG.mapPanel.addCountiesThatIntersectWith(feature.geometry);
+//                    CONFIG.mapPanel.highlightFeature(feature);
                     window.collapse();
                 }
             },
@@ -64,7 +67,6 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 rawValueKey: 'dayMet'//used in handler
             }
         ];
-        
         
         config = Ext.apply({
             items : items

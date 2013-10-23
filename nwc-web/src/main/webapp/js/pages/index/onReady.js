@@ -43,6 +43,7 @@ Ext.onReady(function() {
         border: false,
         layout: 'border',
         autoShow: true,
+        id: 'nwcui-body-panel',
         items: [
             CONFIG.mapPanel
         ]
