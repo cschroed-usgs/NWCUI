@@ -91,32 +91,31 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     );
 
         gageFeatureLayer.id = 'gage-feature-layer';
-
+        var workflowLayerOptions = {
+            opacity: 0.3,
+            displayInLayerSwitcher: false,
+            visibility: false,
+            isBaseLayer : false
+        };
+        
         var hucLayer = new OpenLayers.Layer.WMS("National WBD Snapshot",
                 CONFIG.endpoint.geoserver + 'gwc/service/wms',
                 {
                         layers: 'NHDPlusHUCs:NationalWBDSnapshot',
                         transparent: true,
                         styles: ['polygon']
-                }, {
-                        opacity: 0.3,
-                        displayInLayerSwitcher: false,
-                        visibility: false,
-                        isBaseLayer : false
-        });
+                },
+                workflowLayerOptions
+        );
         hucLayer.id = 'huc-feature-layer';
-        
+
         var bioDataSitesLayer = new OpenLayers.Layer.WMS("BioData Sites",
             CONFIG.endpoint.geoserver + 'wms',
              {
                      layers: 'BioData:SiteInfo',
                      transparent: true
-             }, {
-                     opacity: 0.3,
-                     isBaseLayer : false,
-                     displayInLayerSwitcher: false,
-                     visibility: false
-             }
+             },
+             workflowLayerOptions
         );
         bioDataSitesLayer.id = 'biodata-sites-feature-layer';
         
