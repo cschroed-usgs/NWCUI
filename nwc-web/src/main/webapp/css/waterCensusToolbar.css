@@ -1,0 +1,72 @@
+/*
+ * @inspiration: http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css
+ */
+
+/**
+ * Editing and navigation icons.
+ * (using the editing_tool_bar.png sprint image)
+ */
+
+.olControlWaterCensusToolbar {
+    margin: 5px 5px 0 0;
+}
+
+.olControlWaterCensusToolbar div {
+    background-image: url("../js/openlayers/theme/default/img/editing_tool_bar.png");
+    background-repeat: no-repeat;
+    margin: 0 0 5px 5px;
+    width: 24px;
+    height: 22px;
+    cursor: pointer
+}
+/* positions */
+.olControlWaterCensusToolbar {
+    top: 50%;
+    left: 9px;
+}
+
+/* individual controls */
+
+.olControlWaterCensusToolbar .olControlNavigationItemInactive {
+    background-position: -103px -1px;
+}
+.olControlWaterCensusToolbar .olControlNavigationItemActive  {
+    background-position: -103px -24px;
+}
+.olControlWaterCensusToolbar .olControlZoomBoxItemInactive {
+    background-position: -128px -1px;
+}
+.olControlWaterCensusToolbar .olControlZoomBoxItemActive  {
+    background-position: -128px -24px;
+}
+.olControlWaterCensusToolbar .olControlDrawFeaturePointItemInactive {
+    background-position: -77px -1px;
+}
+.olControlWaterCensusToolbar .olControlDrawFeaturePointItemActive {
+    background-position: -77px -24px;
+}
+.olControlWaterCensusToolbar .olControlDrawFeaturePathItemInactive {
+    background-position: -51px -1px;
+}
+.olControlWaterCensusToolbar .olControlDrawFeaturePathItemActive {
+    background-position: -51px -24px;
+}
+div.olControlHucSelectionToolItemInactive {
+    background-image: url("../images/hucInactive.png");
+}
+div.olControlBioSitesSelectionToolItemInactive {
+        background-image: url("../images/bioInactive.png");
+}
+div.olControlHucSelectionToolItemActive{
+        background-image: url("../images/hucActive.png");
+
+}
+div.olControlBioSitesSelectionToolItemActive{
+        background-image: url("../images/bioActive.png");
+}
+.olControlWaterCensusToolbar .olControlDrawFeaturePolygonItemInactive{
+    background-position: -26px -1px;
+}
+.olControlWaterCensusToolbar .olControlDrawFeaturePolygonItemActive {
+    background-position: -26px -24px;
+}
