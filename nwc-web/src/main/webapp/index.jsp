@@ -36,6 +36,7 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
+        <link type="text/css" rel="stylesheet" href="css/waterCensusToolbar.css" />
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
 
         <jsp:include page="js/dygraphs/dygraphs.jsp">
@@ -59,6 +60,7 @@
         <jsp:include page="js/geoext/geoext.jsp" >
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        <script type="text/javascript" src="js/Ui/WaterCensusToolbar.js"></script>
         <jsp:include page="js/geoext/ux/WPS/WPS.jsp"/>
         <jsp:include page="js/geoext/ux/SOS/SOS.jsp"/>
         <jsp:include page="js/ext/ux/notify/notify.jsp"/>
