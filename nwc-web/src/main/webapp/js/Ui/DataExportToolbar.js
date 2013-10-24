@@ -53,7 +53,7 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                         
                         //@note: mocking response for now
                         //@todo cease mocking once data issues resolved
-                        var dummyUrl = '/js/Data/mockWaterUseSosResponse.xml';
+                        var dummyUrl = 'js/Data/mockWaterUseSosResponse.xml';
                         var waterUseFailure = function(data, status, jqXHR){
                             NWCUI.ui.errorNotify(
                                 'An error occurred while retrieving water use data from:\n'+

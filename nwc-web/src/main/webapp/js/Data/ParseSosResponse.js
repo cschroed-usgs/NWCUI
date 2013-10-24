@@ -27,8 +27,8 @@ NWCUI.data.getValuesFromSosResponse = function(response){
  * @returns {Array} a table of native data type results
  */
 NWCUI.data.parseSosResponseValues = function(valuesTxt){
-    valuesTxt = valuesTxt.slice(0, valuesTxt.length-2);//kill terminal space and newline (' \n')
-    var rows = valuesTxt.split(' ');
+    valuesTxt = valuesTxt.trim();//kill terminal space and newline (' \n')
+    var rows = valuesTxt.split(/\s+/);
     var finalRows = [];
     var nonNanHasBeenFound = false;
     rows.each(function(row){
