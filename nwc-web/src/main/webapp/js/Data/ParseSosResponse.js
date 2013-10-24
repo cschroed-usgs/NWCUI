@@ -40,21 +40,21 @@ NWCUI.data.parseSosResponseValues = function(valuesTxt){
         var values = [];
         var containsNaN = false;
         var value;
-        tokens.each(function(){
-            value = parseFloat(tokens[1]);
+        tokens.each(function (token) {
+            value = parseFloat(token);
             //if NaN of NaN-ish:
-            if(isNaN(value) || NWCUI.data.parseSosResponse.emptyValues.any(value)){
+            if (isNaN(value) || NWCUI.data.parseSosResponse.emptyValues.any(value)) {
                 containsNaN = true;
                 //if the any value in a row is NaN, all values will be considered NaN
-                values = tokens.from(1).map(function(){
-                   return NaN;
+                values = tokens.from(1).map(function () {
+                    return NaN;
                 });
                 return false; //stop iteration through tokens
-           }
-           else{
-               values.push(value);
-           }
-            
+            }
+            else {
+                values.push(value);
+            }
+
         }, 1);//start at 1 because date is token[0]
         
         //Do not display leading NaN values in periods of record.

@@ -8,7 +8,14 @@ describe('ParseSosResponse.js', function(){
     var parse = function(data){
         return NWCUI.data.parseSosResponseValues(data);
     };
-    
+    var countPureNaNRows = function(results){
+        return results.filter(isPureNanRow).length;
+    }
+    var isPureNanRow = function (row) {
+        return row.every(function (cell) {
+            return isNaN(cell);
+        });
+    };
     var countNaNsInResults = function(results){
         var numNans = 0;
         results.each(function(row){
@@ -78,9 +85,31 @@ describe('ParseSosResponse.js', function(){
         //double-check:
         expect(emptysInMiddleResults.length).toBe(numResponseRecords);
     });
-//no functionality after this point, only test data:   
+    
+    it('should omit leading NaN rows in the period of record for multi-value rows', function(){
+        var results = parse(multiValueFirstRowOneNan);
+        expect(results.length).toBe(1);
+    });
+    it('should omit leading Empty rows in the period of record for multi-value rows', function(){
+        var results = parse(multiValueFirstRowOneEmpty);
+        expect(results.length).toBe(1);
+    });
+    it('should convert rows with one or more NaNs into pure NaN rows', function(){
+        var results = parse(multiValueSecondRowOneNan);
+        expect(countPureNaNRows(results)).toBe(1);
+        expect(isPureNanRow(results[1])).toBe(true);
+    });
+    it('should convert rows with one or more empties into pure NaN rows', function(){
+        var results = parse(multiValueSecondRowOneEmpty);
+        expect(countPureNaNRows(results)).toBe(1);
+        expect(isPureNanRow(results[1])).toBe(true);
+    });
+    
+//no functionality after this point, only test data:
 var noNaNsData, nansInFrontData, nansInMiddleData, nansInFrontAndMiddleData,
-        emptysInFrontData, emptysInMiddleData, emptysInFrontAndMiddleData;
+    emptysInFrontData, emptysInMiddleData, emptysInFrontAndMiddleData,
+    multiValueNoNaNs, multiValueSecondRowOneNan, multiValueSecondRowOneEmpty,
+    multiValueFirstRowOneNan, multiValueFirstRowOneEmpty;
 
 //if you change the number of NaNs in the following string, update the test accordingly
 nansInFrontData = "1951-01-01T00:00:00Z,NaN \n" +
@@ -276,4 +305,29 @@ noNaNsData = "1951-01-01T00:00:00Z,1.97 \n" +
 "1952-11-01T00:00:00Z,1.59 \n" +
 "1952-12-01T00:00:00Z,1.45 \n";
 
+multiValueNoNaNs = 
+'1985-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0 \n'+
+'1990-01-01T00:00:00Z,0.1,0.2,0.42,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2 \n'+
+'1995-01-01T00:00:00Z,0.1,0.2,0.42,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2 \n'+
+'2000-01-01T00:00:00Z,0.1,0.2,0.42,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2 \n'+
+'2005-01-01T00:00:00Z,0.1,0.2,0.42,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,42 \n';
+
+multiValueSecondRowOneNan = 
+'1985-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0 \n'+
+'1990-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,NaN \n'+//row should be all NaNs
+'1995-01-01T00:00:00Z,0.1,0.2,0.42,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2 \n';
+
+multiValueSecondRowOneEmpty = 
+'1985-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0 \n'+
+'1990-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-999 \n'+//row should be all NaNs
+'1995-01-01T00:00:00Z,0.1,0.2,0.42,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2 \n';
+
+multiValueFirstRowOneNan =
+'1985-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,NaN \n'+//row should be omitted
+'1990-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0 \n';
+
+
+multiValueFirstRowOneEmpty = 
+'1985-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-999 \n'+//row should be omitted
+'1990-01-01T00:00:00Z,0.1,0.2,0.33,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0 \n';
 });
