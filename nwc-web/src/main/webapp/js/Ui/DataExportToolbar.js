@@ -49,8 +49,11 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                     var countySelectedCallback = function(countyFeature){
                         window.restore();
                         var offeringId = countyFeature.attributes.FIPS;
-                        var url = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
+                        var sosUrl = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
                         
+                        //@note: mocking response for now
+                        //@todo cease mocking once data issues resolved
+                        var dummyUrl = '/js/Data/mockWaterUseSosResponse.xml';
                         var waterUseFailure = function(data, status, jqXHR){
                             NWCUI.ui.errorNotify(
                                 'An error occurred while retrieving water use data from:\n'+
@@ -76,7 +79,7 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                             }
                         };
                         
-                        $.when($.ajax(url)).then(waterUseSuccess, waterUseFailure);
+                        $.when($.ajax(dummyUrl)).then(waterUseSuccess, waterUseFailure);
                             
                         
                     };
