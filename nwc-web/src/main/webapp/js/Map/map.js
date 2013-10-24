@@ -745,7 +745,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     fontWeight: 'bold',
                     labelOutlineColor: "white",
                     labelOutlineWidth: 1,
-                    labelAlign: 'cm'
+                    labelAlign: 'cm',
+                    cursor: 'pointer'
                 }),
                 filter: intersectionFilter,
                 projection: new OpenLayers.Projection("EPSG:4326"),
@@ -793,13 +794,15 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     },
     addCountySelectControl: function(options){
         var self = this;
-        var layersToRemove = options.layersToDeletePostSelect;
+        var selectionLayer = options.selectionLayer;
+        var layersToRemove = [selectionLayer];
+        layersToRemove.push(options.highlightedLayer);
         var map = CONFIG.mapPanel.map;
         var hucControl = self.dynamicControls.hucs;
         var control = new OpenLayers.Control.SelectFeature(
+            selectionLayer,
             {
                 onSelect: function(feature){
-                    console.dir(arguments);
                     map.removeControl(control);
                     hucControl.activate();
                     layersToRemove.each(function(layer){
@@ -811,5 +814,6 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         
         hucControl.deactivate();
         map.addControl(control);
+        control.activate();
     }
 });

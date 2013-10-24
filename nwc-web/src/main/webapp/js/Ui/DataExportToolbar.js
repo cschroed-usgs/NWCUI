@@ -46,14 +46,20 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 handler: function(button, event){
                     var window = button.findParentByType('dataWindow');
                     var feature = window.feature;
-                    
+                   
                     var highlightedFeatureLayer = CONFIG.mapPanel.addHighlightedFeature(feature);
                     var intersectingCountiesLayer = CONFIG.mapPanel.addCountiesThatIntersectWith(feature.geometry);
                     CONFIG.mapPanel.addCountySelectControl(
                         {
-                            layersToDeletePostSelect: [highlightedFeatureLayer, intersectingCountiesLayer]
+                            highlightedLayer: highlightedFeatureLayer,
+                            selectionLayer: intersectingCountiesLayer
                         }
                     );
+                    new Ext.ux.Notify({
+                        msgWidth: 200,
+                        title: 'Info',
+                        msg: 'Select a County'
+                    }).show(document);
                     
                     window.collapse();
                 }
