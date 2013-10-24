@@ -532,7 +532,11 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         
         var labeledAjaxCalls = [];
         
-        Ext.iterate(NWCUI.data.SosSources, function(sourceId, source){
+        //grab the sos sources that will be used to display the initial data 
+        //series. ignore other data sources that the user can add later.
+        var initialSosSourceKeys = ['eta', 'dayMet'];
+        var initialSosSources = Object.select(NWCUI.data.SosSources, initialSosSourceKeys);
+        Ext.iterate(initialSosSources, function(sourceId, source){
            var url = NWCUI.data.buildSosUrlFromSource(offering, source);
            var labeledAjaxCall = NWCUI.util.makeLabeledAjaxCall(sourceId, url);
            labeledAjaxCalls.push(labeledAjaxCall);
@@ -716,6 +720,28 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
     },
     /**
+     * @param {Openlayers.Feature.Vector} hucFeature The huc that a user has selected.
+     * @param {Function} countySelectedCallback The callback fired once a user 
+     * has selected a representative county for water use. The callback's only 
+     * parameter is a Openlayers.Feature.Vector for the county the user selected.
+     */
+    getCountyThatIntersectsWithHucFeature: function(hucFeature, countySelectedCallback){
+        var highlightedFeatureLayer = CONFIG.mapPanel.addHighlightedFeature(hucFeature);
+        var intersectingCountiesLayer = CONFIG.mapPanel.addCountiesThatIntersectWith(hucFeature.geometry);
+        CONFIG.mapPanel.addCountySelectControl(
+            {
+                highlightedLayer: highlightedFeatureLayer,
+                selectionLayer: intersectingCountiesLayer,
+                countySelectedCallback: countySelectedCallback
+            }
+        );
+        new Ext.ux.Notify({
+            msgWidth: 200,
+            title: 'Info',
+            msg: 'Select a County'
+        }).show(document);
+    },
+    /**
      * @param {Openlayers.Geometry} geometry The geom of the huc that will be 
      * used to search for intersections with the counties layer
      * @returns {Openlayers.Layer.Vector} the vector layer containing the 
@@ -808,6 +834,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     layersToRemove.each(function(layer){
                         map.removeLayer(layer);
                     });
+                    options.countySelectedCallback(feature);
                 }
             }
         );

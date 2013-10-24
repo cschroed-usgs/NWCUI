@@ -11,6 +11,12 @@ NWCUI.data.SosSources = {
         units: 'mm/day',
         dataset: 'HUC12_data',
         fileName: 'HUC12_eta_fixed.ncml'
+    },
+    countyWaterUse: {
+        observedProperty: 'CO-CUTot,DO-CUTot,IN-CUTot,PF-CUTot,PG-CUTot,PN-CUTot,PO-CUTot,PC-CUTot,MI-CUTot,LI-CUsFr,AQ-CUTot,LS-CUTot,IC-IrTot',
+        units: 'Mgal/d',
+        dataset: 'county_data',
+        fileName: 'AWUDS.nc'
     }
 };
 /**

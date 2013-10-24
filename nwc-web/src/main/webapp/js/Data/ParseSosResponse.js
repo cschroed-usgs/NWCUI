@@ -37,17 +37,33 @@ NWCUI.data.parseSosResponseValues = function(valuesTxt){
         var dateStr = tokens[0].to(tokens[0].indexOf('T'));
         dateStr = dateStr.replace(/-/g,'/');
         dateStr = dateStr.trim();
-        var value = parseFloat(tokens[1]);
-        if(NWCUI.data.parseSosResponse.emptyValues.any(value)){
-            value = NaN;
-        }
-        //Do not display leading NaNs in periods of record.
+        var values = [];
+        var containsNaN = false;
+        var value;
+        tokens.each(function(){
+            value = parseFloat(tokens[1]);
+            //if NaN of NaN-ish:
+            if(isNaN(value) || NWCUI.data.parseSosResponse.emptyValues.any(value)){
+                containsNaN = true;
+                //if the any value in a row is NaN, all values will be considered NaN
+                values = tokens.from(1).map(function(){
+                   return NaN;
+                });
+                return false; //stop iteration through tokens
+           }
+           else{
+               values.push(value);
+           }
+            
+        }, 1);//start at 1 because date is token[0]
+        
+        //Do not display leading NaN values in periods of record.
         //In other words:
-        //Only add the parsed row to final rows if the current value is a number
-        //or if the current value is NaN, but a previously-parsed value was a number
-
-        if(!isNaN(value) || (isNaN(value) && nonNanHasBeenFound)){//could be optimized to use implicit logic, but this way is more intelligible
-            finalRows.push([dateStr, value]);
+        //Only add the parsed row to final rows if the current row contains no 
+        //NaN(s) or if the current row does contain NaN(s), but a 
+        //previously-parsed row in the period of record contained no NaN(s)
+        if(!containsNaN || (containsNaN && nonNanHasBeenFound)){//could be optimized to use implicit logic, but this way is more intelligible
+            finalRows.push([dateStr].concat(values));
             nonNanHasBeenFound = true;  //it is a number, 
         }
     });

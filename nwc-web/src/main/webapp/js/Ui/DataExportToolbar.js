@@ -46,21 +46,42 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 handler: function(button, event){
                     var window = button.findParentByType('dataWindow');
                     var feature = window.feature;
-                   
-                    var highlightedFeatureLayer = CONFIG.mapPanel.addHighlightedFeature(feature);
-                    var intersectingCountiesLayer = CONFIG.mapPanel.addCountiesThatIntersectWith(feature.geometry);
-                    CONFIG.mapPanel.addCountySelectControl(
-                        {
-                            highlightedLayer: highlightedFeatureLayer,
-                            selectionLayer: intersectingCountiesLayer
-                        }
-                    );
-                    new Ext.ux.Notify({
-                        msgWidth: 200,
-                        title: 'Info',
-                        msg: 'Select a County'
-                    }).show(document);
-                    
+                    var countySelectedCallback = function(countyFeature){
+                        window.restore();
+                        var offeringId = countyFeature.attributes.FIPS;
+                        var url = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
+                        
+                        var waterUseFailure = function(data, status, jqXHR){
+                            NWCUI.ui.errorNotify(
+                                'An error occurred while retrieving water use data from:\n'+
+                                this.url + '\n' +
+                                'See browser logs for details'
+                                );
+                            LOG.error('Error while accessing: ' + this.url + '\n' + data);
+                        };
+                        
+                        var waterUseSuccess = function(data, status, jqXHR){
+                            
+                            if (    null === data ||        //null data
+                                    !data.documentElement ||//not an xml document
+                                    !data.documentElement.textContent || //malformed xmlDocument
+                                    data.documentElement.textContent.has('exception') //xmlDocument with an exception message
+                                ) {
+                                waterUseFailure.apply(this, arguments);
+                            }
+                            else{
+                                var parsedValues = NWCUI.data.parseSosResponse(data);
+                                console.dir(parsedValues);
+                                debugger;
+                            }
+                        };
+                        
+                        $.when($.ajax(url)).then(waterUseSuccess, waterUseFailure);
+                            
+                        
+                    };
+                    CONFIG.mapPanel.getCountyThatIntersectsWithHucFeature(feature, countySelectedCallback);
+
                     window.collapse();
                 }
             },

@@ -17,11 +17,6 @@ NWCUI.data.DataSeriesStore = function(series){
     var self = this;
     self.daily = new NWCUI.data.DataSeries();
     self.monthly = new NWCUI.data.DataSeries();
-    var validSeriesObject = function(series){
-        //verify that all of the keys *SosSources* are present in *series*;
-        var seriesKeys = Object.keys(series);
-        return seriesKeys.union(Object.keys(NWCUI.data.SosSources)).length === seriesKeys.length;
-    };
     var addSeriesLabel = function(seriesClass, metadata){
         self[seriesClass].metadata.seriesLabels.push(
                 metadata.seriesName + ' (' + metadata.seriesUnits + ')'
@@ -105,13 +100,8 @@ NWCUI.data.DataSeriesStore = function(series){
         addSeriesLabel('monthly', etaSeries.metadata);
     };
     var updateDataSeries = function(series){
-        if(validSeriesObject(series)){
-            updateDailySeries(series);
-            updateMonthlySeries(series);
-        }
-        else{
-            throw new Error("Invalid data series format.");
-        }
+        updateDailySeries(series);
+        updateMonthlySeries(series);
     };
     
     
