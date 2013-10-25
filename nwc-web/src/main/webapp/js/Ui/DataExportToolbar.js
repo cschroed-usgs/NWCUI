@@ -70,8 +70,11 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                 waterUseFailure.apply(this, arguments);
                             }
                             else {
-                                var parsedValues = NWCUI.data.parseSosResponse(data);
-                                console.dir(parsedValues);
+                                var parsedTable = NWCUI.data.parseSosResponse(data);
+                                var countyAreaSqMiles = countyFeature.attributes.AREA_SQMI;
+                                var countyAreaAcres = NWCUI.data.convert.squareMilesToAcres(countyAreaSqMiles);
+                                var convertedTable = NWCUI.data.convert.mgdTableToMmPerDayTable(parsedTable, countyAreaAcres);
+                                console.dir(convertedTable);
                                 debugger;
                             }
                         };
