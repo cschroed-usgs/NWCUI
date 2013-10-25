@@ -51,9 +51,6 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                         var offeringId = countyFeature.attributes.FIPS;
                         var sosUrl = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
                         
-                        //@note: mocking response for now
-                        //@todo cease mocking once data issues resolved
-                        var dummyUrl = 'js/Data/mockWaterUseSosResponse.xml';
                         var waterUseFailure = function(data, status, jqXHR){
                             NWCUI.ui.errorNotify(
                                 'An error occurred while retrieving water use data from:\n'+
@@ -62,25 +59,24 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                 );
                             LOG.error('Error while accessing: ' + this.url + '\n' + data);
                         };
-                        
-                        var waterUseSuccess = function(data, status, jqXHR){
-                            
-                            if (    null === data ||        //null data
-                                    !data.documentElement ||//not an xml document
+
+                        var waterUseSuccess = function (data, status, jqXHR) {
+
+                            if (null === data || //null data
+                                    !data.documentElement || //not an xml document
                                     !data.documentElement.textContent || //malformed xmlDocument
                                     data.documentElement.textContent.has('exception') //xmlDocument with an exception message
-                                ) {
+                                    ) {
                                 waterUseFailure.apply(this, arguments);
                             }
-                            else{
+                            else {
                                 var parsedValues = NWCUI.data.parseSosResponse(data);
                                 console.dir(parsedValues);
                                 debugger;
                             }
                         };
-                        
-                        $.when($.ajax(dummyUrl)).then(waterUseSuccess, waterUseFailure);
-                            
+
+                        $.when($.ajax(sosUrl)).then(waterUseSuccess, waterUseFailure);
                         
                     };
                     CONFIG.mapPanel.getCountyThatIntersectsWithHucFeature(feature, countySelectedCallback);
