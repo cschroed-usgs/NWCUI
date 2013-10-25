@@ -13,7 +13,7 @@ NWCUI.data.DataSeries = function(){
  * monthly and daily series for Graph to consume.
  * @returns {undefined}
  */
-NWCUI.data.DataSeriesStore = function(series){
+NWCUI.data.DataSeriesStore = function () {
     var self = this;
     self.daily = new NWCUI.data.DataSeries();
     self.monthly = new NWCUI.data.DataSeries();
@@ -22,13 +22,13 @@ NWCUI.data.DataSeriesStore = function(series){
                 metadata.seriesName + ' (' + metadata.seriesUnits + ')'
         );
     };
-    var updateDailySeries = function(series){
+    var updateDailyHucSeries = function (series) {
         var dailyTable = [],
             etaIndex = 0,
             etaForCurrentMonth = NaN,
             dayMetSeries = series.dayMet,
             etaSeries = series.eta;
-    
+
         Ext.each(dayMetSeries.data, function(dayMetRow){
             var dayMetDateStr = dayMetRow[0],
                 dayMetValue = dayMetRow[1],
@@ -54,7 +54,7 @@ NWCUI.data.DataSeriesStore = function(series){
         addSeriesLabel('daily', dayMetSeries.metadata);
         addSeriesLabel('daily', etaSeries.metadata);
     };
-    var updateMonthlySeries = function(series){
+    var updateMonthlyHucSeries = function (series) {
         var monthlyTable = [],
             etaIndex = 0,
             etaForCurrentMonth = NaN,
@@ -99,11 +99,20 @@ NWCUI.data.DataSeriesStore = function(series){
         addSeriesLabel('monthly', dayMetSeries.metadata);
         addSeriesLabel('monthly', etaSeries.metadata);
     };
-    var updateDataSeries = function(series){
-        updateDailySeries(series);
-        updateMonthlySeries(series);
+    /**
+     * @param {Map<String, NWCUI.data.DataSeries>} seriesHash A hash of series id to
+     * DataSeries objects
+     */
+    self.updateHucSeries = function (seriesHash) {
+        updateDailyHucSeries(seriesHash);
+        updateMonthlyHucSeries(seriesHash);
     };
-    
-    
-    updateDataSeries(series);
+   /**
+     * @param {Map<String, NWCUI.data.DataSeries>} series A hash of series id to
+     * DataSeries objects
+     */
+    self.updateWaterUseSeries = function (seriesHash) {
+        updateDailyWaterUseSeries(seriesHash);
+        updateMonthlyWaterUseSeries(seriesHash);
+    };
 };

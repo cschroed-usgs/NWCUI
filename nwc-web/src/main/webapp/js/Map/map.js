@@ -481,7 +481,9 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 LOG.debug('Removing previous data display window');
                 dataDisplayWindow.destroy();
             }
-            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
+            var dataSeriesStore = new NWCUI.data.DataSeriesStore();
+            dataSeriesStore.updateHucSeries(labeledResponses);
+            
             var win = new NWCUI.ui.DataWindow(Object.merge(
                     windowOptions,
                     {
