@@ -50,7 +50,7 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                         window.restore();
                         var offeringId = countyFeature.attributes.FIPS;
                         var sosUrl = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
-                        
+                      
                         var waterUseFailure = function(data, status, jqXHR){
                             NWCUI.ui.errorNotify(
                                 'An error occurred while retrieving water use data from:\n'+
@@ -74,7 +74,14 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                 var countyAreaSqMiles = countyFeature.attributes.AREA_SQMI;
                                 var countyAreaAcres = NWCUI.data.convert.squareMilesToAcres(countyAreaSqMiles);
                                 var convertedTable = NWCUI.data.convert.mgdTableToMmPerDayTable(parsedTable, countyAreaAcres);
-                                console.dir(convertedTable);
+                                //add a summation series to the table
+                                convertedTable = convertedTable.map(function(row){
+                                    var nonDateValues = row.from(1);
+                                    var rowSum = nonDateValues.sum();
+                                    var newRow = row.clone();//shallow array copy
+                                    newRow.push(rowSum);
+                                    return newRow;
+                                });
                                 debugger;
                             }
                         };
