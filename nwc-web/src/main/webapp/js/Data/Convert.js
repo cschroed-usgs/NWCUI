@@ -5,8 +5,13 @@ NWCUI.data.convert.mgdToMmAcresPerDay = function(mgd){
 };
 NWCUI.data.convert.mgdTableToMmPerDayTable = function(table, acres){
     var convertRow = function(row){
-        return row.map(function(mgd){
-            return NWCUI.data.convert.mgdToMmAcresPerDay(mgd) / acres;
+        return row.map(function(mgdOrDate, index){
+            if (0 === index) {//it's a date
+                return mgdOrDate;
+            }
+            else {//its an mgd
+                return NWCUI.data.convert.mgdToMmAcresPerDay(mgdOrDate) / acres;
+            }
         });
     };
     return table.map(convertRow);
