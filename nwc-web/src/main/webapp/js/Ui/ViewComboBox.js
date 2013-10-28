@@ -14,7 +14,8 @@ NWCUI.ui.ViewComboBoxMixin = function(){
             win.doLayout();
             win.graphPanel.graph = graph;
         };
-        Ext.iterate(win.dataSeriesStore, function(key, value){
+        var dataKeys = ['monthly', 'daily'];
+        Ext.iterate(dataKeys, function(key, value){
             comboStoreData.push([key, key.capitalize()]);
         });
         var comboStore = new Ext.data.ArrayStore({
