@@ -44,10 +44,11 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 xtype: 'button',
                 text: 'Add Water Use Data',
                 handler: function(button, event){
-                    var window = button.findParentByType('dataWindow');
-                    var feature = window.feature;
+                    button.disable();
+                    var dataWindow = button.findParentByType('dataWindow');
+                    var feature = dataWindow.feature;
                     var countySelectedCallback = function(countyFeature){
-                        window.restore();
+                        dataWindow.restore();
                         var offeringId = countyFeature.attributes.FIPS;
                         var sosUrl = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
                       
@@ -76,22 +77,31 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                 var convertedTable = NWCUI.data.convert.mgdTableToMmPerDayTable(parsedTable, countyAreaAcres);
                                 //add a summation series to the table
                                 convertedTable = convertedTable.map(function(row){
-                                    var nonDateValues = row.from(1);
+                                    var nonDateValues = row.from(1);//don't try to sum dates
                                     var rowSum = nonDateValues.sum();
                                     var newRow = row.clone();//shallow array copy
                                     newRow.push(rowSum);
                                     return newRow;
                                 });
-                                debugger;
+                                var waterUseDataSeries = new NWCUI.data.DataSeries();
+                                waterUseDataSeries.data = convertedTable;
+                                
+                                //use the series metadata as labels
+                                var additionalSeriesLabels = NWCUI.data.SosSources.countyWaterUse.observedProperty.split(',');
+                                additionalSeriesLabels.push('Aggregate Water Use');
+                                waterUseDataSeries.metadata.seriesLabels = waterUseDataSeries.metadata.seriesLabels.from(1).concat(additionalSeriesLabels);
+                                
+                                dataWindow.dataSeriesStore.updateWaterUseSeries(waterUseDataSeries);
+                                dataWindow.expand();
+                                dataWindow.updateGraph(dataWindow);
                             }
                         };
 
                         $.when($.ajax(sosUrl)).then(waterUseSuccess, waterUseFailure);
-                        
                     };
                     CONFIG.mapPanel.getCountyThatIntersectsWithHucFeature(feature, countySelectedCallback);
 
-                    window.collapse();
+                    dataWindow.collapse();
                 }
             },
             '-',

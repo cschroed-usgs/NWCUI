@@ -107,12 +107,68 @@ NWCUI.data.DataSeriesStore = function () {
         updateDailyHucSeries(seriesHash);
         updateMonthlyHucSeries(seriesHash);
     };
+    var getRowDate = function(row){
+      return new Date(row[0]);  
+    };
+    var getRowValuesWithoutDate = function(row){
+        return row.from(1);
+    };
+    var nextWaterUseRowIndex = 0;
+    var getNextWaterUseRow = function(waterUseSeries){
+        var nextWaterUseRow = waterUseSeries.data[nextWaterUseRowIndex];
+        nextWaterUseRowIndex++;
+        return nextWaterUseRow;
+    };
+    /**
+     * @param {NWCUI.data.DataSeries} waterUseSeries
+     */
+    self.updateDailyWaterUseSeries = function (waterUseSeries) {
+        //first merge data into daily data series
+        //
+        //IMPORTANT: re-init the water use row counter
+        nextWaterUseRowIndex = 0;
+        
+        var nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
+        var nextWaterUseDate = getRowDate(nextWaterUseRow);
+        var nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
+        var valuesToAppendToRow = nextWaterUseValues.map(function(){
+            return NaN;
+        });//initially fill with an array of NaN's of length == firstRow.length-1
+            //this var will be updated throughout the loop
+        
+        self.daily.data = self.daily.data.map(function (row) {
+            var rowDate = getRowDate(row);
+            if(rowDate.is(nextWaterUseDate)){
+                //update current values to append to rows
+                valuesToAppendToRow = nextWaterUseValues.clone();
+                
+                //now update info that will be used on+for next date discovery
+                nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
+                if(nextWaterUseRow){
+                    nextWaterUseDate = getRowDate(nextWaterUseRow);
+                    nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
+                }
+            }
+            return row.concat(valuesToAppendToRow);
+        });
+
+        //then merge labels into data series metadata
+        self.daily.metadata.seriesLabels = self.daily.metadata.seriesLabels.concat(waterUseSeries.metadata.seriesLabels);
+    };
+    /**
+     * @param {NWCUI.data.DataSeries} series
+     */
+    self.updateMonthlyWaterUseSeries = function (series) {
+        debugger;
+    };
    /**
-     * @param {Map<String, NWCUI.data.DataSeries>} series A hash of series id to
+     * @param {NWCUI.data.DataSeries} waterUseSeries A hash of series id to
      * DataSeries objects
      */
-    self.updateWaterUseSeries = function (seriesHash) {
-        updateDailyWaterUseSeries(seriesHash);
-        updateMonthlyWaterUseSeries(seriesHash);
+    self.updateWaterUseSeries = function (waterUseSeries) {
+        //these functions assume that the water use time series will always be 
+        //inferior in time length to the existing time series
+        self.updateDailyWaterUseSeries(waterUseSeries);
+        self.updateMonthlyWaterUseSeries(waterUseSeries);
     };
 };
