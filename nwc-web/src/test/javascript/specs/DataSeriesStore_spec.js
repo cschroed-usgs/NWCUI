@@ -49,7 +49,8 @@ describe('DataSeriesStore', function(){
         eta: etaDataSeries
     };
 
-    var dss = new NWCUI.data.DataSeriesStore(dataSeries);
+    var dss = new NWCUI.data.DataSeriesStore();
+    dss.updateHucSeries(dataSeries);
     //give functions inside describe block access to the test data via closure
     beforeEach(function (){
         dss = dss;
