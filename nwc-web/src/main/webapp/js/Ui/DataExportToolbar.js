@@ -89,7 +89,8 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                 //use the series metadata as labels
                                 var additionalSeriesLabels = NWCUI.data.SosSources.countyWaterUse.observedProperty.split(',');
                                 additionalSeriesLabels.push('Aggregate Water Use');
-                                waterUseDataSeries.metadata.seriesLabels = waterUseDataSeries.metadata.seriesLabels.from(1).concat(additionalSeriesLabels);
+                                var waterUseValueLabelsOnly = waterUseDataSeries.metadata.seriesLabels.from(1);//skip the initial 'Date' label
+                                waterUseDataSeries.metadata.seriesLabels = waterUseValueLabelsOnly.concat(additionalSeriesLabels);
                                 
                                 dataWindow.dataSeriesStore.updateWaterUseSeries(waterUseDataSeries);
                                 dataWindow.expand();

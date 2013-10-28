@@ -107,22 +107,24 @@ NWCUI.data.DataSeriesStore = function () {
         updateDailyHucSeries(seriesHash);
         updateMonthlyHucSeries(seriesHash);
     };
-    var getRowDate = function(row){
-      return new Date(row[0]);  
+    var getRowDate = function (row) {
+        return new Date(row[0]);  
     };
-    var getRowValuesWithoutDate = function(row){
+    var getRowValuesWithoutDate = function (row) {
         return row.from(1);
     };
     var nextWaterUseRowIndex = 0;
-    var getNextWaterUseRow = function(waterUseSeries){
+    var getNextWaterUseRow = function (waterUseSeries) {
         var nextWaterUseRow = waterUseSeries.data[nextWaterUseRowIndex];
         nextWaterUseRowIndex++;
         return nextWaterUseRow;
     };
+    
     /**
      * @param {NWCUI.data.DataSeries} waterUseSeries
+     * @param {NWCUI.data.DataSeries} existingTimeSeries
      */
-    self.updateDailyWaterUseSeries = function (waterUseSeries) {
+    self.mergeWaterUseSeriesIntoExistingTimeSeries = function (waterUseSeries, existingTimeSeries) {
         //first merge data into daily data series
         //
         //IMPORTANT: re-init the water use row counter
@@ -136,7 +138,7 @@ NWCUI.data.DataSeriesStore = function () {
         });//initially fill with an array of NaN's of length == firstRow.length-1
             //this var will be updated throughout the loop
         
-        self.daily.data = self.daily.data.map(function (row) {
+        existingTimeSeries.data = existingTimeSeries.data.map(function (row) {
             var rowDate = getRowDate(row);
             if(rowDate.is(nextWaterUseDate)){
                 //update current values to append to rows
@@ -153,13 +155,19 @@ NWCUI.data.DataSeriesStore = function () {
         });
 
         //then merge labels into data series metadata
-        self.daily.metadata.seriesLabels = self.daily.metadata.seriesLabels.concat(waterUseSeries.metadata.seriesLabels);
+        existingTimeSeries.metadata.seriesLabels = existingTimeSeries.metadata.seriesLabels.concat(waterUseSeries.metadata.seriesLabels);
     };
     /**
-     * @param {NWCUI.data.DataSeries} series
+     * @param {NWCUI.data.DataSeries} waterUseSeries
      */
-    self.updateMonthlyWaterUseSeries = function (series) {
-        debugger;
+    self.updateDailyWaterUseSeries = function (waterUseSeries){
+        self.mergeWaterUseSeriesIntoExistingTimeSeries(waterUseSeries, self.daily);
+    }
+    /**
+     * @param {NWCUI.data.DataSeries} waterUseSeries
+     */
+    self.updateMonthlyWaterUseSeries = function (waterUseSeries) {
+        self.mergeWaterUseSeriesIntoExistingTimeSeries(waterUseSeries, self.monthly);
     };
    /**
      * @param {NWCUI.data.DataSeries} waterUseSeries A hash of series id to
