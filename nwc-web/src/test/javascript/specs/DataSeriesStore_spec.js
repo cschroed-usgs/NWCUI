@@ -83,19 +83,31 @@ describe('DataSeriesStore', function(){
             expect(dss.daily.data[0].length).toBe(6);
        });
        it('should not join the water use values into the existing time series early', function(){
+           //daily
            //find index of last day of first month
            var mergedIndex = dateRangeStart.daysInMonth() - 1;//subtract because 0-based
            var waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[mergedIndex]);
            var waterUseValuesFromMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[0]);
            expect(waterUseValuesFromMergedRow).not.toEqual(waterUseValuesFromMockRow);
+           //monthly
+           mergedIndex = 0;//1st month
+           waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[mergedIndex]);
+           expect(waterUseValuesFromMergedRow).not.toEqual(waterUseValuesFromMockRow);
        });
        it('should join the water use values into the existing time series starting at the appropriate time step', function(){
-           var mergedIndex = dateRangeStart.daysInMonth();//actually indexes into next month because it's 0-based
+           //daily
+           var mergedIndex = dateRangeStart.daysInMonth();//this actually indexes into next month because it's 0-based
            var waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[mergedIndex]);
            var waterUseValuesFromMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[0]);
            expect(waterUseValuesFromMergedRow).toEqual(waterUseValuesFromMockRow);
+           //monthly
+           mergedIndex = 1;//second month
+           waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[mergedIndex]);
+           expect(waterUseValuesFromMergedRow).toEqual(waterUseValuesFromMockRow);
+
        });
         it('should switch which water use values are joined onto the time series when the next water use timestep has been reached', function () {
+            //daily
             var mergedIndex = dateRangeStart.daysInMonth();
             mergedIndex += dateRangeStart.clone().addMonths(1).daysInMonth();
             var waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[mergedIndex]);
@@ -104,11 +116,15 @@ describe('DataSeriesStore', function(){
             var waterUseValuesFromMergedRowAreNaNs = waterUseValuesFromMergedRow.map(isNaN);
             var waterUseValuesFromMockRowAreNaNs = waterUseValuesFromMockRow.map(isNaN);
             expect(waterUseValuesFromMergedRowAreNaNs).toEqual(waterUseValuesFromMockRowAreNaNs);
-
+            
             //try the next Timestep too, it has non-NaNs
             mergedIndex += dateRangeStart.clone().addMonths(2).daysInMonth();
-            var waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[mergedIndex]);
-            var waterUseValuesFromMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[2]);
+            waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[mergedIndex]);
+            waterUseValuesFromMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[2]);
+            expect(waterUseValuesFromMergedRow).toEqual(waterUseValuesFromMockRow);
+            //monthly
+            mergedIndex = 3;//4th month
+            waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[mergedIndex]);
             expect(waterUseValuesFromMergedRow).toEqual(waterUseValuesFromMockRow);
 
         });
