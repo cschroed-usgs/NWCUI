@@ -59,8 +59,8 @@ describe('DataSeriesStore', function(){
     });
     describe('DataSeriesStore#updateWaterUseSeries', function(){
         //subsequent tests presume 3 rows on monthly increments, starting with
-        //the first month of the eta time series and ending with the first day of 
-        //the last month of the eta time series
+        //the first day of the second month of the eta time series and ending 
+        //with the first day of the last month of the eta time series
        
        var mockWaterUseData = [
            [dateRangeStart.clone().addMonths(1), 1, 2, 3],
