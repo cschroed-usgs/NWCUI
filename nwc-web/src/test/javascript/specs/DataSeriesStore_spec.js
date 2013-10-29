@@ -1,7 +1,7 @@
 initializeLogging();
 describe('DataSeriesStore', function(){
     var dateRangeStart = Date.create('March 1951');
-    var dateRangeEnd = Date.create('April 1956').endOfMonth().beginningOfDay();
+    var dateRangeEnd = Date.create('July 1956').endOfMonth().beginningOfDay();
     var dateRange = Date.range(
         dateRangeStart,
         dateRangeEnd
@@ -63,10 +63,11 @@ describe('DataSeriesStore', function(){
         //the first day of the second month of the eta time series and ending 
         //with the first day of the last month of the eta time series
        
+       //actual data will be in 5 year increments, but 1-month increment suffice for our tests
        var mockWaterUseData = [
            [dateRangeStart.clone().addMonths(1), 1, 2, 3],
            [dateRangeStart.clone().addMonths(2), NaN, NaN, NaN],
-           [dateRangeStart.clone().addMonths(3), 4, 5, 6]
+           [dateRangeStart.clone().addMonths(3), 4, 5, 6] //should not be NaNs, this would break tests
        ];
        var labels = ['Date', 'Drinking', 'Industry', 'Irrigation'];
        var mockWaterUseSeries = new NWCUI.data.DataSeries();
@@ -127,6 +128,44 @@ describe('DataSeriesStore', function(){
             mergedIndex = 3;//4th month
             waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[mergedIndex]);
             expect(waterUseValuesFromMergedRow).toEqual(waterUseValuesFromMockRow);
+        });
+        it('should only keep joining the last water use value to the time series for the duration of the default time increment', function(){
+            //daily
+            
+            var firstUnmergedIndex = dateRangeStart.daysInMonth();
+            var firstMonthForLastWaterUseRow = dateRangeStart.clone();
+            
+            (2).times(function(){
+                firstUnmergedIndex += firstMonthForLastWaterUseRow.addMonths(1).daysInMonth();
+            });
+            //mergedIndex now points at the last day of the first month where 
+            //the last water use data row was joined for the first time
+            
+            //now we need to add the number of days equivalent to the county 
+            //water use series defaultTimeIncrement to ensure that the join of
+            //value stops on the proper timestep
+            var endOfWaterUseJoin = firstMonthForLastWaterUseRow.clone();
+            endOfWaterUseJoin.advance(NWCUI.data.SosSources.countyWaterUse.defaultTimeIncrement);
+            
+            firstUnmergedIndex += firstMonthForLastWaterUseRow.daysUntil(endOfWaterUseJoin);
+            //check to make sure the last merge was correct
+
+            var lastMergedIndex = firstUnmergedIndex - 1;
+            var waterUseValuesFromLastMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[lastMergedIndex]);
+            var waterUseValuesFromLastMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[2]);
+            expect(waterUseValuesFromLastMergedRow).toEqual(waterUseValuesFromLastMockRow);
+            //check to make sure the first unmerged location is all NaNs
+            
+            //ensure nanValues array length is equal to waterUseValues length
+            var nanValues = waterUseValuesFromLastMockRow.map(function () {
+                return NaN;
+            });
+
+            var waterUseValuesFromFirstUnmergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[firstUnmergedIndex]);
+            //entreating special NaN case RE: NaN != NaN in JS
+            var waterUseValuesFromFirstUnmergedRowAreNaNs = waterUseValuesFromFirstUnmergedRow.map(isNaN);
+            var nanValuesAreNans = nanValues.map(isNaN);//redundant, but necessary because NaN != NaN
+            expect(waterUseValuesFromFirstUnmergedRowAreNaNs).toEqual(nanValuesAreNans);
 
         });
     });
