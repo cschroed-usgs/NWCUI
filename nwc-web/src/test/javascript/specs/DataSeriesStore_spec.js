@@ -129,9 +129,8 @@ describe('DataSeriesStore', function(){
             waterUseValuesFromMergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[mergedIndex]);
             expect(waterUseValuesFromMergedRow).toEqual(waterUseValuesFromMockRow);
         });
-        it('should only keep joining the last water use value to the time series for the duration of the default time increment', function(){
+        it('should only keep joining the last water use value to the time series for the duration of the water use default time increment', function(){
             //daily
-            
             var firstUnmergedIndex = dateRangeStart.daysInMonth();
             var firstMonthForLastWaterUseRow = dateRangeStart.clone();
             
@@ -154,7 +153,7 @@ describe('DataSeriesStore', function(){
             var waterUseValuesFromLastMergedRow = getWaterUseValuesFromMergedRow(dss.daily.data[lastMergedIndex]);
             var waterUseValuesFromLastMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[2]);
             expect(waterUseValuesFromLastMergedRow).toEqual(waterUseValuesFromLastMockRow);
-            //check to make sure the first unmerged location is all NaNs
+            //ensure the first unmerged location is all NaNs
             
             //ensure nanValues array length is equal to waterUseValues length
             var nanValues = waterUseValuesFromLastMockRow.map(function () {
@@ -166,7 +165,27 @@ describe('DataSeriesStore', function(){
             var waterUseValuesFromFirstUnmergedRowAreNaNs = waterUseValuesFromFirstUnmergedRow.map(isNaN);
             var nanValuesAreNans = nanValues.map(isNaN);//redundant, but necessary because NaN != NaN
             expect(waterUseValuesFromFirstUnmergedRowAreNaNs).toEqual(nanValuesAreNans);
+            
+            //monthly
+            firstMonthForLastWaterUseRow = dateRangeStart.clone();
+            firstMonthForLastWaterUseRow.advance('3 months');
+            var firstUnmergedMonth = firstMonthForLastWaterUseRow.clone();
+            firstUnmergedMonth.advance(NWCUI.data.SosSources.countyWaterUse.defaultTimeIncrement);
+            var firstUnmergedIndex = dateRangeStart.monthsUntil(firstUnmergedMonth);
 
+            //ensure the last merge was correct
+            lastMergedIndex = firstUnmergedIndex - 1;
+            waterUseValuesFromLastMergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[lastMergedIndex]);
+            waterUseValuesFromLastMockRow = getWaterUseValuesFromMockRow(mockWaterUseData[2]);
+            expect(waterUseValuesFromLastMergedRow).toEqual(waterUseValuesFromLastMockRow);
+            
+            //ensure the first unmerged location is all NaNs
+            
+            //entreating special NaN case RE: NaN != NaN in JS
+            waterUseValuesFromFirstUnmergedRow = getWaterUseValuesFromMergedRow(dss.monthly.data[firstUnmergedIndex]);
+            var waterUseValuesFromFirstUnmergedRowAreNaNs = waterUseValuesFromFirstUnmergedRow.map(isNaN);
+            expect(waterUseValuesFromFirstUnmergedRowAreNaNs).toEqual(nanValuesAreNans);
+            
         });
     });
 });
