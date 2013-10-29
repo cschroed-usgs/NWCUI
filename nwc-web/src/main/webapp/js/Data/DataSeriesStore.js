@@ -119,7 +119,9 @@ NWCUI.data.DataSeriesStore = function () {
         nextWaterUseRowIndex++;
         return nextWaterUseRow;
     };
-    
+    var addDefaultTimeIncrement = function (date) {
+        return date.advance(NWCUI.data.SosSources.countyWaterUse.defaultTimeIncrement);
+    };
     /**
      * @param {NWCUI.data.DataSeries} waterUseSeries
      * @param {NWCUI.data.DataSeries} existingTimeSeries
@@ -137,7 +139,7 @@ NWCUI.data.DataSeriesStore = function () {
             return NaN;
         });//initially fill with an array of NaN's of length == firstRow.length-1
             //this var will be updated throughout the loop
-        
+        var pastEndOfWaterUseData = false;
         existingTimeSeries.data = existingTimeSeries.data.map(function (row) {
             var rowDate = getRowDate(row);
             if(rowDate.is(nextWaterUseDate)){
@@ -146,9 +148,23 @@ NWCUI.data.DataSeriesStore = function () {
                 
                 //now update info that will be used on+for next date discovery
                 nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
-                if(nextWaterUseRow){
+                if(nextWaterUseRow){//if you have more water use rows
                     nextWaterUseDate = getRowDate(nextWaterUseRow);
                     nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
+                }
+                else{//if you have no more water use rows
+                    if(pastEndOfWaterUseData){
+                        valuesToAppendToRow = nextWaterUseValues;
+                        nextWaterUseDate = undefined;
+                    }
+                    else{
+                        pastEndOfWaterUseData = true;
+                        nextWaterUseDate = addDefaultTimeIncrement(rowDate.clone());
+                        nextWaterUseValues = valuesToAppendToRow.map(function(){
+                        return NaN;
+                    });
+                    }
+
                 }
             }
             return row.concat(valuesToAppendToRow);

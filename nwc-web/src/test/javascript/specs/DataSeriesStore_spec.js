@@ -1,7 +1,7 @@
 initializeLogging();
 describe('DataSeriesStore', function(){
     var dateRangeStart = Date.create('March 1951');
-    var dateRangeEnd = Date.create('June 1951').endOfMonth().beginningOfDay();
+    var dateRangeEnd = Date.create('April 1956').endOfMonth().beginningOfDay();
     var dateRange = Date.range(
         dateRangeStart,
         dateRangeEnd
@@ -43,7 +43,8 @@ describe('DataSeriesStore', function(){
     });    
     describe('DataSeriesStore#updateMonthlySeries', function(){
         it('should handle the case that the period of record ends on the last day of a month', function(){
-            expect(dss.monthly.data.length).toBe(4);
+            var numMonths = dateRangeStart.monthsUntil(dateRangeEnd);
+            expect(dss.monthly.data.length).toBe(numMonths);
         });
         it('should correctly acummulate eta and join it to monthly eta', function(){
             expect(dss.monthly.data[0][1]).toBe(31);
