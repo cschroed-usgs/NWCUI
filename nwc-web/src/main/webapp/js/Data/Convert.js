@@ -1,7 +1,15 @@
 Ext.ns('NWCUI.data.convert');
 
 NWCUI.data.convert.mgdToMmAcresPerDay = function(mgd){
-    return mgd * 935.395;//conversion factor as determined by dblodgett
+    /**
+     * Dimensional analysis for conversion factor as determined by dblodgett
+     * 
+     * Million Gallons      1 000 000           1 m^3               1 acre          1000 mm
+     * _______________  *   _________   *   _______________ *   _____________   *   ________    = 935.395 mm*acres/day
+     *      day             1 million       264.172 gallons     4046.86 m^2           1 m                     
+     */
+    var mgdToMmAcresPerDayConversionFactor = 935.395;
+    return mgd * mgdToMmAcresPerDayConversionFactor;
 };
 NWCUI.data.convert.mgdTableToMmPerDayTable = function(table, acres){
     var convertRow = function(row){
