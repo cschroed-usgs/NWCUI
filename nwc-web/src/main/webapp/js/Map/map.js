@@ -439,7 +439,8 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
             }
         },
-    sosSuccess: function(windowTitle, allAjaxResponseArgs){
+    sosSuccess: function(windowOptions, allAjaxResponseArgs){
+        var windowTitle = windowOptions.title;
         var self = this,
             errorsFound = false,
             labeledResponses = {},
@@ -479,13 +480,18 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 LOG.debug('Removing previous data display window');
                 dataDisplayWindow.destroy();
             }
-            var dataSeriesStore = new NWCUI.data.DataSeriesStore(labeledResponses);
-            var win = new NWCUI.ui.DataWindow({
-                id: 'data-display-window',
-                title: windowTitle,
-                dataSeriesStore: dataSeriesStore,
-                labeledRawValues: labeledRawValues
-            });
+            var dataSeriesStore = new NWCUI.data.DataSeriesStore();
+            dataSeriesStore.updateHucSeries(labeledResponses);
+            
+            var win = new NWCUI.ui.DataWindow(Object.merge(
+                    windowOptions,
+                    {
+                        id: 'data-display-window',
+                        dataSeriesStore: dataSeriesStore,
+                        labeledRawValues: labeledRawValues
+                    }
+                )
+            );
             win.show();
             win.center();
             win.toFront();
@@ -514,14 +520,24 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
      */
     displayDataWindow: function(record){
         var self = this;
+        var geom = record.getFeature().geometry;
         var offering = record.data[self.fieldNames.huc12Id];
         var huc12Name = record.data[self.fieldNames.huc12Name] || "";
         var huc12Id = record.data[self.fieldNames.huc12Id] || "";
         var title = huc12Name.length ? huc12Name + " - " : "";
         title += huc12Id;
+        
+        var windowOptions = {};
+        windowOptions.title = title;
+        windowOptions.feature = record.getFeature();
+        
         var labeledAjaxCalls = [];
         
-        Ext.iterate(NWCUI.data.SosSources, function(sourceId, source){
+        //grab the sos sources that will be used to display the initial data 
+        //series. ignore other data sources that the user can add later.
+        var initialSosSourceKeys = ['eta', 'dayMet'];
+        var initialSosSources = Object.select(NWCUI.data.SosSources, initialSosSourceKeys);
+        Ext.iterate(initialSosSources, function(sourceId, source){
            var url = NWCUI.data.buildSosUrlFromSource(offering, source);
            var labeledAjaxCall = NWCUI.util.makeLabeledAjaxCall(sourceId, url);
            labeledAjaxCalls.push(labeledAjaxCall);
@@ -532,7 +548,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
          * and injects the title into the real callback
          */
         var sosSuccessWrapper = function(){
-            self.sosSuccess(title, arguments);
+            self.sosSuccess(windowOptions, arguments);
         };
         //run all ajax calls and execute the callback 
         $.when.apply(self, labeledAjaxCalls).then(
@@ -596,7 +612,10 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
                 featureSelectionModel.on({
                     'rowselect' : {
-                        fn : function(obj, rowIndex, record) { self.displayDataWindow(record); },
+                        fn : function(obj, rowIndex, record) {
+                            self.displayDataWindow(record);
+                            Ext.getCmp('identify-popup-window').close();
+                        },
                         delay: 100
                      }
                  });
@@ -700,5 +719,130 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 mapLayer.updateFromClipValue(val);
             }
         }
+    },
+    /**
+     * @param {Openlayers.Feature.Vector} hucFeature The huc that a user has selected.
+     * @param {Function} countySelectedCallback The callback fired once a user 
+     * has selected a representative county for water use. The callback's only 
+     * parameter is a Openlayers.Feature.Vector for the county the user selected.
+     */
+    getCountyThatIntersectsWithHucFeature: function(hucFeature, countySelectedCallback){
+        var highlightedFeatureLayer = CONFIG.mapPanel.addHighlightedFeature(hucFeature);
+        var intersectingCountiesLayer = CONFIG.mapPanel.addCountiesThatIntersectWith(hucFeature.geometry);
+        CONFIG.mapPanel.addCountySelectControl(
+            {
+                highlightedLayer: highlightedFeatureLayer,
+                selectionLayer: intersectingCountiesLayer,
+                countySelectedCallback: countySelectedCallback
+            }
+        );
+        new Ext.ux.Notify({
+            msgWidth: 200,
+            title: 'Info',
+            msg: 'Select a County'
+        }).show(document);
+    },
+    /**
+     * @param {Openlayers.Geometry} geometry The geom of the huc that will be 
+     * used to search for intersections with the counties layer
+     * @returns {Openlayers.Layer.Vector} the vector layer containing the 
+     * intersecting counties
+     */
+    addCountiesThatIntersectWith: function(geometry){
+        LOG.debug('Adding Filtered Counties WFS layer based on HUC geometry');
+        var self = this;
+        var intersectionFilter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: 'the_geom',
+            value: geometry
+        });
+       var intersectingCountiesLayer = new OpenLayers.Layer.Vector(
+            'Historical Counties',
+            {   
+                opacity: 0.6,
+                displayInLayerSwitcher: false,
+                strategies: [new OpenLayers.Strategy.BBOX()],
+                styleMap: new OpenLayers.StyleMap({
+                    strokeWidth: 3,
+                    strokeColor: '#333333',
+                    fillColor: '#FF9900',
+                    fillOpacity: 0.4,
+                    //Display County Name
+                    label: '${NAME}',
+                    fontSize: '2em',
+                    fontWeight: 'bold',
+                    labelOutlineColor: "white",
+                    labelOutlineWidth: 1,
+                    labelAlign: 'cm',
+                    cursor: 'pointer'
+                }),
+                filter: intersectionFilter,
+                projection: new OpenLayers.Projection("EPSG:4326"),
+                protocol: new OpenLayers.Protocol.WFS({
+                    version: '1.0.0',
+                    url: CONFIG.endpoint.geoserver + 'ows',
+                    featureType: "US_Historical_Counties",
+                    featureNS: 'http://cida.usgs.gov/nwc',
+                    geometryName: 'the_geom',
+                    srsName: 'EPSG:900913'
+                })
+            }
+        );
+        intersectingCountiesLayer.id = 'counties-feature-layer';
+        var map = CONFIG.mapPanel.map;
+        map.addLayer(intersectingCountiesLayer);
+        var countiesExtent = intersectingCountiesLayer.getExtent();
+        map.zoomToExtent(countiesExtent);
+        return intersectingCountiesLayer;
+    },
+    /**
+     * @param {OpenLayers.Feature.Vector} feature
+     * @returns {Openlayers.Layer.Vector} the vector layer added to the map.
+     */
+    addHighlightedFeature: function(feature){
+        var self = this;
+        var highlightedLayer = new OpenLayers.Layer.Vector(
+            'Highlighted HUC',
+            {
+                displayInLayerSwitcher: false,
+                isBaseLayer: false,
+                opacity: 0.6,
+                projection: new OpenLayers.Projection("EPSG:900913"),
+                style: {
+                    fillColor: '#00FF00'
+                }
+            }
+        );
+        highlightedLayer.addFeatures([feature]);
+        
+        highlightedLayer.id = 'highlighted-layer';
+        var map = CONFIG.mapPanel.map;
+        map.addLayer(highlightedLayer);
+        return highlightedLayer;
+    },
+    addCountySelectControl: function(options){
+        var self = this;
+        var selectionLayer = options.selectionLayer;
+        var layersToRemove = [selectionLayer];
+        layersToRemove.push(options.highlightedLayer);
+        var map = CONFIG.mapPanel.map;
+        var hucControl = self.dynamicControls.hucs;
+        var control = new OpenLayers.Control.SelectFeature(
+            selectionLayer,
+            {
+                onSelect: function(feature){
+                    map.removeControl(control);
+                    hucControl.activate();
+                    layersToRemove.each(function(layer){
+                        map.removeLayer(layer);
+                    });
+                    options.countySelectedCallback(feature);
+                }
+            }
+        );
+        
+        hucControl.deactivate();
+        map.addControl(control);
+        control.activate();
     }
 });

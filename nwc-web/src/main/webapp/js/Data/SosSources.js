@@ -11,6 +11,13 @@ NWCUI.data.SosSources = {
         units: 'mm/day',
         dataset: 'HUC12_data',
         fileName: 'HUC12_eta_fixed.ncml'
+    },
+    countyWaterUse: {
+        observedProperty: 'PS-WFrTo,DO-WFrTo,IN-WTotl,MI-WTotl',
+        units: 'Mgal/d',
+        dataset: 'county_data',
+        fileName: 'AWUDS.nc',
+        defaultTimeIncrement: '5 years'
     }
 };
 /**

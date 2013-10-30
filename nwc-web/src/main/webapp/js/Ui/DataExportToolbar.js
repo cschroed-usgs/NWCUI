@@ -42,6 +42,72 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             '->',
             {
                 xtype: 'button',
+                text: 'Add Water Use Data',
+                handler: function(button, event){
+                    button.disable();
+                    var dataWindow = button.findParentByType('dataWindow');
+                    var feature = dataWindow.feature;
+                    var countySelectedCallback = function(countyFeature){
+                        dataWindow.restore();
+                        var offeringId = countyFeature.attributes.FIPS;
+                        var sosUrl = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
+                      
+                        var waterUseFailure = function(data, status, jqXHR){
+                            NWCUI.ui.errorNotify(
+                                'An error occurred while retrieving water use data from:\n'+
+                                this.url + '\n' +
+                                'See browser logs for details'
+                                );
+                            LOG.error('Error while accessing: ' + this.url + '\n' + data);
+                        };
+
+                        var waterUseSuccess = function (data, status, jqXHR) {
+
+                            if (null === data || //null data
+                                    !data.documentElement || //not an xml document
+                                    !data.documentElement.textContent || //malformed xmlDocument
+                                    data.documentElement.textContent.has('exception') //xmlDocument with an exception message
+                                    ) {
+                                waterUseFailure.apply(this, arguments);
+                            }
+                            else {
+                                var parsedTable = NWCUI.data.parseSosResponse(data);
+                                var countyAreaSqMiles = countyFeature.attributes.AREA_SQMI;
+                                var countyAreaAcres = NWCUI.data.convert.squareMilesToAcres(countyAreaSqMiles);
+                                var convertedTable = NWCUI.data.convert.mgdTableToMmPerDayTable(parsedTable, countyAreaAcres);
+                                //add a summation series to the table
+                                convertedTable = convertedTable.map(function(row){
+                                    var nonDateValues = row.from(1);//don't try to sum dates
+                                    var rowSum = nonDateValues.sum();
+                                    var newRow = row.clone();//shallow array copy
+                                    newRow.push(rowSum);
+                                    return newRow;
+                                });
+                                var waterUseDataSeries = new NWCUI.data.DataSeries();
+                                waterUseDataSeries.data = convertedTable;
+                                
+                                //use the series metadata as labels
+                                var additionalSeriesLabels = NWCUI.data.SosSources.countyWaterUse.observedProperty.split(',');
+                                additionalSeriesLabels.push('Aggregate Water Use');
+                                var waterUseValueLabelsOnly = waterUseDataSeries.metadata.seriesLabels.from(1);//skip the initial 'Date' label
+                                waterUseDataSeries.metadata.seriesLabels = waterUseValueLabelsOnly.concat(additionalSeriesLabels);
+                                
+                                dataWindow.dataSeriesStore.updateWaterUseSeries(waterUseDataSeries);
+                                dataWindow.expand();
+                                dataWindow.updateGraph(dataWindow);
+                            }
+                        };
+
+                        $.when($.ajax(sosUrl)).then(waterUseSuccess, waterUseFailure);
+                    };
+                    CONFIG.mapPanel.getCountyThatIntersectsWithHucFeature(feature, countySelectedCallback);
+
+                    dataWindow.collapse();
+                }
+            },
+            '-',
+            {
+                xtype: 'button',
                 text: 'Download ETa Data',
                 handler: exportHandler,
                 cls: 'export_button',
@@ -55,7 +121,7 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 rawValueKey: 'dayMet'//used in handler
             }
         ];
-
+        
         config = Ext.apply({
             items : items
         }, config);

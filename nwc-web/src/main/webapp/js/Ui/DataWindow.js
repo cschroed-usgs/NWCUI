@@ -12,7 +12,16 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
                //attach the contained components so that they can be easily referenced later
         self.graphPanel = new NWCUI.ui.StatsGraphPanel();
         self.labelPanel = new NWCUI.ui.StatsLabelPanel();
-        
+        var updateGraph = function(window){
+            window = window || self;
+            var graphDiv = window.graphPanel.getEl().dom;
+            var legendDiv = window.labelPanel.getEl().dom;
+            var values = self.dataSeriesStore[self.defaultSeries].data;
+            var labels = self.dataSeriesStore[self.defaultSeries].metadata.seriesLabels;
+            var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, values, labels);
+            window.doLayout();
+            self.graphPanel.graph = graph;
+        };
         config = Ext.apply({
             width: width,
             height: height,
@@ -24,15 +33,17 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
             bbar: new NWCUI.ui.DataExportToolbar(),
             listeners:{
                 afterrender: function(window){
-                    var graphDiv = window.graphPanel.getEl().dom;
-                    var legendDiv = window.labelPanel.getEl().dom;
-                    var values = self.dataSeriesStore[self.defaultSeries].data;
-                    var labels = self.dataSeriesStore[self.defaultSeries].metadata.seriesLabels;
-                    var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, values, labels);
-                    window.doLayout();
-                    self.graphPanel.graph = graph;
+                    updateGraph(window);
+                },
+                collapse: function(window){
+                    window.alignTo(Ext.get('nwcui-body-panel'), 'tl', [50, 0], true);
+                },
+                expand: function (window) {
+                    window.center();
+
                 }
-            }
+            },
+            updateGraph: updateGraph
         }, config);
 
         NWCUI.ui.DataWindow.superclass.constructor.call(this, config);
