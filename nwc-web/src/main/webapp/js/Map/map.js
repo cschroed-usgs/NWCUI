@@ -768,6 +768,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     strokeColor: '#333333',
                     fillColor: '#FF9900',
                     fillOpacity: 0.4,
+                    //Display County Name
                     label: '${NAME}',
                     fontSize: '2em',
                     fontWeight: 'bold',

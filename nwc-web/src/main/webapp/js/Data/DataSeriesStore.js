@@ -108,12 +108,26 @@ NWCUI.data.DataSeriesStore = function () {
         updateMonthlyHucSeries(seriesHash);
     };
     var getRowDate = function (row) {
-        return new Date(row[0]);  
+        var date,
+            dateString,
+            dateIndexInRow = 0;
+        if (row && row[dateIndexInRow]) {
+            dateString = row[dateIndexInRow];
+            date = new Date(dateString);
+            if (!date.isValid()) {
+                throw new Error("invalid date specified");
+            }
+        }
+        else {
+            throw new Error("empty or undefined row");
+        }
+        return date;
     };
     var getRowValuesWithoutDate = function (row) {
-        return row.from(1);
+        var startOfValuesIndex = 1;
+        return row.from(startOfValuesIndex);
     };
-    var nextWaterUseRowIndex = 0;
+    var nextWaterUseRowIndex = 0;   //this always points at the next row, not the current one
     var getNextWaterUseRow = function (waterUseSeries) {
         var nextWaterUseRow = waterUseSeries.data[nextWaterUseRowIndex];
         nextWaterUseRowIndex++;
@@ -135,11 +149,13 @@ NWCUI.data.DataSeriesStore = function () {
         var nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
         var nextWaterUseDate = getRowDate(nextWaterUseRow);
         var nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
+        
+        //initially fill an array of length == firstRow.length-1 with NaN's 
+        //this var will be updated throughout the loop
         var valuesToAppendToRow = nextWaterUseValues.map(function(){
             return NaN;
-        });//initially fill with an array of NaN's of length == firstRow.length-1
-            //this var will be updated throughout the loop
-        var pastEndOfWaterUseData = false;
+        });
+        var lastWaterUseValuesHaveBeenJoinedToTimeSeries = false;
         existingTimeSeries.data = existingTimeSeries.data.map(function (row) {
             var rowDate = getRowDate(row);
             if(rowDate.is(nextWaterUseDate)){
@@ -148,23 +164,58 @@ NWCUI.data.DataSeriesStore = function () {
                 
                 //now update info that will be used on+for next date discovery
                 nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
-                if(nextWaterUseRow){//if you have more water use rows
+                //if you have more water use rows
+                if (nextWaterUseRow) {
                     nextWaterUseDate = getRowDate(nextWaterUseRow);
                     nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
                 }
-                else{//if you have no more water use rows
-                    if(pastEndOfWaterUseData){
+                //if you have no more water use rows to join in
+                else{
+                    /*
+                     * if you have joined the last water use row's values into 
+                     * the time series for the duration of the defaultTimeIncrement
+                     * then you need to join NaN values to the rest of the time series.
+                     */
+                    if (lastWaterUseValuesHaveBeenJoinedToTimeSeries) {
+                        /*
+                         * nextWaterUseValues was set to an array of NaNs when 
+                         * we started joining the last water use values to the 
+                         * time series
+                         */
                         valuesToAppendToRow = nextWaterUseValues;
+                        
+                        //now ensure that the outermost comparison of the loop
+                        //is never again satisfied
                         nextWaterUseDate = undefined;
                     }
-                    else{
-                        pastEndOfWaterUseData = true;
-                        nextWaterUseDate = addDefaultTimeIncrement(rowDate.clone());
-                        nextWaterUseValues = valuesToAppendToRow.map(function(){
-                        return NaN;
-                    });
-                    }
+                    else {
+                        /*
+                         * after we join the current water use row, there will be 
+                         * no more water use rows to join. At the moment when we 
+                         * assign true to this variable, it is not true that the
+                         * last water use values have all been joined, but by 
+                         * the next time the variable is read 
+                         * (the if condition above), all of the last water use
+                         * values will be joined.
+                         */
+                        lastWaterUseValuesHaveBeenJoinedToTimeSeries = true;
 
+                        /*
+                         * Since there are no more rows in the waterUse data,
+                         * we must derive the date that satisfies this loop's date 
+                         * comparison by adding the default time increment.
+                         */
+                        nextWaterUseDate = addDefaultTimeIncrement(rowDate.clone());
+                        /*
+                         * After we join the last water use row to the 
+                         * time series for the default duration, we will need 
+                         * to join an array of NaN water use values to all 
+                         * subsequent time steps
+                         */
+                        nextWaterUseValues = valuesToAppendToRow.map(function () {
+                            return NaN;
+                        });
+                    }
                 }
             }
             return row.concat(valuesToAppendToRow);

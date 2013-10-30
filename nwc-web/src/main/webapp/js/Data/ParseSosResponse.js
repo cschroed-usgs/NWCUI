@@ -31,6 +31,17 @@ NWCUI.data.parseSosResponseValues = function(valuesTxt){
     var rows = valuesTxt.split(/\s+/);
     var finalRows = [];
     var nonNanHasBeenFound = false;
+    
+    /**
+     * @param {Array} row A row containing Date, value, value, ... 
+     * @returns {Number} the number of non-date values in the row
+     */
+    var getNumberOfValuesInRow = function (row) {
+        var numberOfDatesPerRow = 1;//just one at the beginning
+        var numberOfValuesInRow = row.length - numberOfDatesPerRow;
+        return numberOfValuesInRow;
+    };
+    
     rows.each(function(row){
         var tokens = row.split(',');
 
@@ -40,23 +51,35 @@ NWCUI.data.parseSosResponseValues = function(valuesTxt){
         var values = [];
         var containsNaN = false;
         var value;
-        tokens.each(function (token) {
+        //parses an individual token
+        var parseToken = function (token) {
             value = parseFloat(token);
             //if NaN of NaN-ish:
             if (isNaN(value) || NWCUI.data.parseSosResponse.emptyValues.any(value)) {
                 containsNaN = true;
+                
                 //if the any value in a row is NaN, all values will be considered NaN
-                values = tokens.from(1).map(function () {
-                    return NaN;
+                values = [];
+                
+                //the number of NaNs to generate must be the same as the number
+                //of values in the row
+                var numberOfNaNsToGenerate = getNumberOfValuesInRow(tokens);
+                (numberOfNaNsToGenerate).times(function () {
+                    values.push(NaN);
                 });
-                return false; //stop iteration through tokens
+                
+                //stop iteration through tokens, just use the NaNs
+                return false;
             }
             else {
                 values.push(value);
             }
 
-        }, 1);//start at 1 because date is token[0]
+        };
         
+        //start iteration through each token array at 1 because date is in token[0]
+        tokens.each(parseToken, 1);
+
         //Do not display leading NaN values in periods of record.
         //In other words:
         //Only add the parsed row to final rows if the current row contains no 
