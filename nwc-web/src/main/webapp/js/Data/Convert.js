@@ -11,20 +11,38 @@ NWCUI.data.convert.mgdToMmAcresPerDay = function(mgd){
     var mgdToMmAcresPerDayConversionFactor = 935.395;
     return mgd * mgdToMmAcresPerDayConversionFactor;
 };
+/**
+ * This function converts each entry of a table from million gallons per day per county to 
+ * millimeter*acres per day and then scales by the number of acres in the county
+ * to yield a table whose entries are all millimeters per day.
+ * 
+ * original table entry : (million gallons / day county)
+ * final table entry : (mm / day)
+ * 
+ * @param {Array<Array>} table A table whose entries are in million gallons per day
+ * @param {Number} acres The area of the county.
+ * @returns {Array<Array>} the converted table
+ */
 NWCUI.data.convert.mgdTableToMmPerDayTable = function(table, acres){
-    var convertRow = function(row){
-        return row.map(function(mgdOrDate, index){
-            if (0 === index) {//it's a date
-                return mgdOrDate;
+    var convertRow = function (row) {
+        return row.map(function (mgdOrDate, index) {
+            var potentiallyConvertedResult;
+            //if it's a date
+            if (0 === index) {
+                potentiallyConvertedResult = mgdOrDate;
             }
-            else {//its an mgd
-                return NWCUI.data.convert.mgdToMmAcresPerDay(mgdOrDate) / acres;
+            //if it's an mgd
+            else {
+                potentiallyConvertedResult = NWCUI.data.convert.mgdToMmAcresPerDay(mgdOrDate) / acres;
             }
+            return potentiallyConvertedResult;
         });
     };
     return table.map(convertRow);
 };
 
 NWCUI.data.convert.squareMilesToAcres = function(squareMiles){
-    return squareMiles * 640.0;//conversion factor per http://en.wikipedia.org/wiki/Acre#Description
+    //conversion factor per http://en.wikipedia.org/wiki/Acre#Description
+    var squareMilesToAcresConversionFactor = 640.0;
+    return squareMiles * squareMilesToAcresConversionFactor;
 };
