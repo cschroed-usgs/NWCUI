@@ -1,6 +1,7 @@
+/*global Ext,LOG,CONFIG,NWCUI,$ */
 Ext.ns('NWCUI.data.convert');
 
-NWCUI.data.convert.mgdToMmAcresPerDay = function(mgd){
+NWCUI.data.convert.mgdToMmAcresPerDay = function (mgd) {
     /**
      * Dimensional analysis for conversion factor as determined by dblodgett
      * 
@@ -23,16 +24,15 @@ NWCUI.data.convert.mgdToMmAcresPerDay = function(mgd){
  * @param {Number} acres The area of the county.
  * @returns {Array<Array>} the converted table
  */
-NWCUI.data.convert.mgdTableToMmPerDayTable = function(table, acres){
+NWCUI.data.convert.mgdTableToMmPerDayTable = function (table, acres) {
     var convertRow = function (row) {
         return row.map(function (mgdOrDate, index) {
             var potentiallyConvertedResult;
             //if it's a date
             if (0 === index) {
                 potentiallyConvertedResult = mgdOrDate;
-            }
-            //if it's an mgd
-            else {
+            } else {
+                //if it's an mgd
                 potentiallyConvertedResult = NWCUI.data.convert.mgdToMmAcresPerDay(mgdOrDate) / acres;
             }
             return potentiallyConvertedResult;
@@ -41,7 +41,7 @@ NWCUI.data.convert.mgdTableToMmPerDayTable = function(table, acres){
     return table.map(convertRow);
 };
 
-NWCUI.data.convert.squareMilesToAcres = function(squareMiles){
+NWCUI.data.convert.squareMilesToAcres = function (squareMiles) {
     //conversion factor per http://en.wikipedia.org/wiki/Acre#Description
     var squareMilesToAcresConversionFactor = 640.0;
     return squareMiles * squareMilesToAcresConversionFactor;

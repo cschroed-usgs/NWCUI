@@ -1,3 +1,5 @@
+/*global Ext,LOG,CONFIG,NWCUI */
+
 Ext.ns('NWCUI.data');
 NWCUI.data.SosSources = {
     dayMet: {
@@ -27,7 +29,7 @@ NWCUI.data.SosSources = {
  * @param {String} fileName The filename of the data of interest. The last 
  * component of the path prior to the arguments
  */
-NWCUI.data.buildSosUrl = function(offering, observedProperty, dataset, fileName){
+NWCUI.data.buildSosUrl = function (offering, observedProperty, dataset, fileName) {
     var sosParams = {
         request: 'GetObservation',
         service: 'SOS',
@@ -41,6 +43,6 @@ NWCUI.data.buildSosUrl = function(offering, observedProperty, dataset, fileName)
  * @param {String} offerring The offerring id as appears in SOS GetCapabilities
  * @param {object - NWCUI.data.SosSources entry} source 
  */
-NWCUI.data.buildSosUrlFromSource = function(offering, source){
+NWCUI.data.buildSosUrlFromSource = function (offering, source) {
     return NWCUI.data.buildSosUrl(offering, source.observedProperty, source.dataset, source.fileName);
 };

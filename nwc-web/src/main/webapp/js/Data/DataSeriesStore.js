@@ -1,12 +1,13 @@
+/*global Ext,LOG,CONFIG,NWCUI,$ */
 Ext.ns('NWCUI.data');
-NWCUI.data.DataSeries = function(){
-        return {
-            metadata: {
-                seriesLabels : ['Date']
-            },
-            data: []
-        };
- };
+NWCUI.data.DataSeries = function () {
+    return {
+        metadata: {
+            seriesLabels: ['Date']
+        },
+        data: []
+    };
+};
 
 /**
  * Given mixed frequency data series metadata and data, converts it to 
@@ -17,9 +18,9 @@ NWCUI.data.DataSeriesStore = function () {
     var self = this;
     self.daily = new NWCUI.data.DataSeries();
     self.monthly = new NWCUI.data.DataSeries();
-    var addSeriesLabel = function(seriesClass, metadata){
+    var addSeriesLabel = function (seriesClass, metadata) {
         self[seriesClass].metadata.seriesLabels.push(
-                metadata.seriesName + ' (' + metadata.seriesUnits + ')'
+            metadata.seriesName + ' (' + metadata.seriesUnits + ')'
         );
     };
     var updateDailyHucSeries = function (series) {
@@ -29,17 +30,17 @@ NWCUI.data.DataSeriesStore = function () {
             dayMetSeries = series.dayMet,
             etaSeries = series.eta;
 
-        Ext.each(dayMetSeries.data, function(dayMetRow){
+        Ext.each(dayMetSeries.data, function (dayMetRow) {
             var dayMetDateStr = dayMetRow[0],
                 dayMetValue = dayMetRow[1],
                 dayIndexInString = dayMetDateStr.lastIndexOf('/') + 1,
                 dayMetDay = dayMetDateStr.substr(dayIndexInString, 2);
-            if('01' === dayMetDay){
+            if ('01' === dayMetDay) {
                 var etaRow = etaSeries.data[etaIndex];
-                if(etaRow){
+                if (etaRow) {
                     var etaDateStr = etaRow[0];
                     var etaValue = etaRow[1];
-                    if(etaDateStr === dayMetDateStr){
+                    if (etaDateStr === dayMetDateStr) {
                         etaForCurrentMonth = etaValue;
                         etaIndex++;
                     }
@@ -61,28 +62,28 @@ NWCUI.data.DataSeriesStore = function () {
             dayMetSeries = series.dayMet,
             monthlyAccumulation = 0,
             firstMonthOfPeriodOfRecord = true,
-            monthDateStr = '',//stored at the beginning of every month, used later once the totals have been accumulated for the month
-            endOfMonth,//stores the end of the current month of iteration
+            monthDateStr = '', //stored at the beginning of every month, used later once the totals have been accumulated for the month
+            endOfMonth, //stores the end of the current month of iteration
             etaSeries = series.eta;
-            
-            
-        Ext.each(dayMetSeries.data, function(dayMetRow){
+
+
+        Ext.each(dayMetSeries.data, function (dayMetRow) {
             var dayMetDateStr = dayMetRow[0],
                 dayMetValue = dayMetRow[1],
                 dayIndexInString = dayMetDateStr.lastIndexOf('/') + 1,
                 dayMetDay = Number(dayMetDateStr.substr(dayIndexInString, 2));
-            if(undefined === endOfMonth){
+            if (undefined === endOfMonth) {
                 endOfMonth = Date.create(dayMetDateStr).daysInMonth();
                 monthDateStr = dayMetDateStr;
             }
             monthlyAccumulation = (monthlyAccumulation + dayMetValue).round(9);//minimize floating-point errors from accumulating
-            if(dayMetDay === endOfMonth){
+            if (dayMetDay === endOfMonth) {
                 //join the date, accumulation and the eta for last month
                 var etaRow = etaSeries.data[etaIndex];
-                if(etaRow){
+                if (etaRow) {
                     var etaDateStr = etaRow[0];
                     var etaValue = etaRow[1];
-                    if(etaDateStr === monthDateStr){
+                    if (etaDateStr === monthDateStr) {
                         etaForCurrentMonth = etaValue;
                         etaIndex++;
                     }
@@ -117,8 +118,7 @@ NWCUI.data.DataSeriesStore = function () {
             if (!date.isValid()) {
                 throw new Error("invalid date specified");
             }
-        }
-        else {
+        } else {
             throw new Error("empty or undefined row");
         }
         return date;
@@ -145,32 +145,32 @@ NWCUI.data.DataSeriesStore = function () {
         //
         //IMPORTANT: re-init the water use row counter
         nextWaterUseRowIndex = 0;
-        
+
         var nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
         var nextWaterUseDate = getRowDate(nextWaterUseRow);
         var nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
-        
+
         //initially fill an array of length == firstRow.length-1 with NaN's 
         //this var will be updated throughout the loop
-        var valuesToAppendToRow = nextWaterUseValues.map(function(){
+        var valuesToAppendToRow = nextWaterUseValues.map(function () {
             return NaN;
         });
         var lastWaterUseValuesHaveBeenJoinedToTimeSeries = false;
         existingTimeSeries.data = existingTimeSeries.data.map(function (row) {
             var rowDate = getRowDate(row);
-            if(rowDate.is(nextWaterUseDate)){
+            if (rowDate.is(nextWaterUseDate)) {
                 //update current values to append to rows
                 valuesToAppendToRow = nextWaterUseValues.clone();
-                
+
                 //now update info that will be used on+for next date discovery
                 nextWaterUseRow = getNextWaterUseRow(waterUseSeries);
                 //if you have more water use rows
                 if (nextWaterUseRow) {
                     nextWaterUseDate = getRowDate(nextWaterUseRow);
                     nextWaterUseValues = getRowValuesWithoutDate(nextWaterUseRow);
-                }
-                //if you have no more water use rows to join in
-                else{
+                } else {
+                    //if you have no more water use rows to join in
+
                     /*
                      * if you have joined the last water use row's values into 
                      * the time series for the duration of the defaultTimeIncrement
@@ -183,12 +183,11 @@ NWCUI.data.DataSeriesStore = function () {
                          * time series
                          */
                         valuesToAppendToRow = nextWaterUseValues;
-                        
+
                         //now ensure that the outermost comparison of the loop
                         //is never again satisfied
                         nextWaterUseDate = undefined;
-                    }
-                    else {
+                    } else {
                         /*
                          * after we join the current water use row, there will be 
                          * no more water use rows to join. At the moment when we 
@@ -227,16 +226,16 @@ NWCUI.data.DataSeriesStore = function () {
     /**
      * @param {NWCUI.data.DataSeries} waterUseSeries
      */
-    self.updateDailyWaterUseSeries = function (waterUseSeries){
+    self.updateDailyWaterUseSeries = function (waterUseSeries) {
         self.mergeWaterUseSeriesIntoExistingTimeSeries(waterUseSeries, self.daily);
-    }
+    };
     /**
      * @param {NWCUI.data.DataSeries} waterUseSeries
      */
     self.updateMonthlyWaterUseSeries = function (waterUseSeries) {
         self.mergeWaterUseSeriesIntoExistingTimeSeries(waterUseSeries, self.monthly);
     };
-   /**
+    /**
      * @param {NWCUI.data.DataSeries} waterUseSeries A hash of series id to
      * DataSeries objects
      */

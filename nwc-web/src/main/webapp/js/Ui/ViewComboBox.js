@@ -1,10 +1,10 @@
 Ext.ns("NWCUI.ui");
-NWCUI.ui.ViewComboBoxMixin = function(){
+NWCUI.ui.ViewComboBoxMixin = function () {
     var self = this;
-    self.constructor = function(config){
+    self.constructor = function (config) {
         var win = config.window;
         var comboStoreData = [];
-        var handler = function(combo, record, index){
+        var handler = function (combo, record, index) {
             win.graphPanel.graph.destroy();
             var graphDiv = win.graphPanel.getEl().dom;
             var legendDiv = win.labelPanel.getEl().dom;
@@ -15,12 +15,12 @@ NWCUI.ui.ViewComboBoxMixin = function(){
             win.graphPanel.graph = graph;
         };
         var dataKeys = ['monthly', 'daily'];
-        Ext.iterate(dataKeys, function(key, value){
+        Ext.iterate(dataKeys, function (key, value) {
             comboStoreData.push([key, key.capitalize()]);
         });
         var comboStore = new Ext.data.ArrayStore({
             fields: ['viewId', 'displayText'],
-            data: comboStoreData,
+            data: comboStoreData
         });
         config = Ext.apply({
             editable: false,

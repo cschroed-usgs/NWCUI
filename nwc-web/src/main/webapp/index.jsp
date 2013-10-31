@@ -104,7 +104,7 @@
                 watersmart:{
                     logo: 'images/watersmart-graphic-small.jpg',
                     link: 'http://www.usbr.gov/WaterSMART/'
-                },
+                }
             };
             CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
