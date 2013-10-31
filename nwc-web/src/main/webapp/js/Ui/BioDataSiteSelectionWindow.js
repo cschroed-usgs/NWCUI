@@ -1,25 +1,39 @@
+/*global Ext,LOG,CONFIG,NWCUI,$,GeoExt,OpenLayers,gxp,XMLSerializer*/
 Ext.ns("NWCUI.ui");
 
 NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
-    constructor: function(config) {
+    constructor: function (config) {
         var self = this;
-        config.windowConfig = config.windowConfig || {};
+        config.windowConfig = config.windowConfig || {
+        };
         var fieldNames = {
             siteId: 'SiteNumber',
             siteName: 'SiteName'
         };
         var defaultId = NWCUI.ui.BioDataSiteSelectionWindow.id;
         var fields = [
-            {name: fieldNames.siteId, type: 'string'},
-            {name: fieldNames.siteName, type: 'string'}
+            {
+                name: fieldNames.siteId,
+                type: 'string'
+            },
+            {
+                name: fieldNames.siteName,
+                type: 'string'
+            }
         ];
         var featureSelectionModel = new Ext.grid.CheckboxSelectionModel();
 
         //prepare column configs for the feature selection dialog
         var columns = [
             featureSelectionModel,
-            {header: 'Site Id', dataIndex: fieldNames.siteId},
-            {header: 'Site Name', dataIndex: fieldNames.siteName}
+            {
+                header: 'Site Id',
+                dataIndex: fieldNames.siteId
+            },
+            {
+                header: 'Site Name',
+                dataIndex: fieldNames.siteName
+            }
         ];
 
         var siteFeatureStore = new GeoExt.data.FeatureStore({
@@ -40,20 +54,20 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
         var bioDataButton = {
             xtype: 'button',
             text: 'Explore Selected Sites in BioData',
-            handler: function() {
+            handler: function () {
                 var siteIds = featureSelectionModel.getSelections().map(
-                    function(record) {
+                    function (record) {
                         return record.data[fieldNames.siteId];
                     }
                 );
-                if(siteIds.length){
+                if (siteIds.length) {
                     /**
                      * @param {array<String>} siteIds
                      */
-                    var preselectBioDataSites = function(siteIds) {
+                    var preselectBioDataSites = function (siteIds) {
                         var doc = CONFIG.bioDataSiteSelectionDoc;
                         var siteNumbersElt = $(doc).find('siteNumbers').empty()[0];
-                        siteIds.each(function(siteId) {
+                        siteIds.each(function (siteId) {
                             var child = doc.createElement('siteNumber');
                             child.textContent = siteId;
                             siteNumbersElt.appendChild(child);
@@ -64,9 +78,9 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
                         //IE
                         if (window.ActiveXObject) {
                             xmlString = doc.xml;
-                        }
-                        // code for Mozilla, Firefox, Opera, etc.
-                        else {
+                        } else {
+                            // code for Mozilla, Firefox, Opera, etc.
+
                             xmlString = (new XMLSerializer()).serializeToString(doc);
                         }
 
@@ -77,8 +91,7 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
 
                     if (CONFIG.bioDataSiteSelectionDoc) {
                         preselectBioDataSites(siteIds, CONFIG.bioDataSiteSelectionDoc);
-                    }
-                    else{
+                    } else {
                         //retrieve document from server
                         $.when($.get('data/BioDataSiteSelection.xml')).then(
                             function (response, status, jqXHR) {
@@ -91,8 +104,7 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
                         );
 
                     }
-                }
-                else {
+                } else {
                     NWCUI.ui.errorNotify('No BioData Sites Selected');
                 }
             }
@@ -100,31 +112,34 @@ NWCUI.ui.BioDataSiteSelectionWindow = Ext.extend(Ext.Window, {
         var helpButton = {
             xtype: 'button',
             icon: 'js/ext/ux/notify/images/info.gif',
-            handler: function(){
+            handler: function () {
                 var msg = 'In order to open BioData with your preselected sites, disable popup-blocking for this web site.';
-                        Ext.Msg.show({
-                            title: 'Information',
-                            msg: msg,
-                            buttons: Ext.Msg.OK,
-                            icon: Ext.MessageBox.QUESTION,
-                            minWidth: 300
-                        });
+                Ext.Msg.show({
+                    title: 'Information',
+                    msg: msg,
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.MessageBox.QUESTION,
+                    minWidth: 300
+                });
             }
         };
-        var windowConfig = Ext.apply({
-            title: 'BioData Site Selection',
-            id: defaultId,
-            layout: 'fit',
-            width: 300,
-            height: 300,
-            items: [featureGrid],
-            fbar: [
-                '->',
-                bioDataButton,
-                helpButton
-            ],
-            featureSelectionModel: featureSelectionModel
-        }, config.windowConfig);
+        var windowConfig = Ext.apply(
+            {
+                title: 'BioData Site Selection',
+                id: defaultId,
+                layout: 'fit',
+                width: 300,
+                height: 300,
+                items: [featureGrid],
+                fbar: [
+                    '->',
+                    bioDataButton,
+                    helpButton
+                ],
+                featureSelectionModel: featureSelectionModel
+            },
+            config.windowConfig
+        );
 
         NWCUI.ui.BioDataSiteSelectionWindow.superclass.constructor.call(this, windowConfig);
         LOG.info('NWCUI.ui.BioDataSiteSelectionWindow::constructor(): Construction complete.');
