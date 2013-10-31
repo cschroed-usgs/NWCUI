@@ -1,18 +1,22 @@
+/*global Ext,LOG,CONFIG,NWCUI,$,GeoExt,OpenLayers,gxp,*/
 Ext.ns("NWCUI.ui");
-NWCUI.ui.SeriesToggleToolbar= Ext.extend(Ext.Toolbar, {
+NWCUI.ui.SeriesToggleToolbar = Ext.extend(Ext.Toolbar, {
     menu: undefined,
-    getSeriesTogglers: function(){
+    getSeriesTogglers: function () {
         return this.menu.getSeriesTogglers();
     },
-    constructor: function(config) {
+    constructor: function (config) {
         var self = this;
-        
-        config = Ext.apply({
-            items: [
+
+        config = Ext.apply(
+            {
+                items: [
                     'Graph View:',
                     new NWCUI.ui.ViewComboBox({window: config.window})
-            ]
-        }, config);
+                ]
+            },
+            config
+        );
 
         NWCUI.ui.SeriesToggleToolbar.superclass.constructor.call(this, config);
         LOG.info('NWCUI.ui.SeriesToggleToolbar::constructor(): Construction complete.');
