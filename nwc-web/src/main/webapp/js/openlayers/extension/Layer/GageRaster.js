@@ -1,3 +1,4 @@
+/*global OpenLayers*/
 /**
  * @requires OpenLayers/Layer/Raster.js
  */
@@ -17,29 +18,33 @@ OpenLayers.Layer.GageRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
     gageRadius: 4,
     gageFill: false,
     CLASS_NAME: "OpenLayers.Layer.GageRaster",
-    initialize: function(config) {
+    initialize: function (config) {
         config.isBaseLayer = false;
         config.readOnly = true;
         config.visibility = false;
         if (!config.data && config.dataLayer) {
-            var gageComposite = OpenLayers.Raster.Composite.fromLayer(config.dataLayer, {int32: true});
+            var gageComposite = OpenLayers.Raster.Composite.fromLayer(
+                config.dataLayer,
+                {int32: true}
+            );
             config.data = this.clipOperation(gageComposite);
         }
         OpenLayers.Layer.Raster.prototype.initialize.apply(this, [config]);
         this.createGageStyle();
         this.events.on('visibilitychanged', this.updateVisibility);
     },
-    createGageStyle: function() {
+    createGageStyle: function () {
         this.gageStyle =
-                "rgba(" +
-                this.gageStyleR + "," +
-                this.gageStyleG + "," +
-                this.gageStyleB + "," +
-                this.gageStyleA / 255 + ")";
+            "rgba(" +
+            this.gageStyleR + "," +
+            this.gageStyleG + "," +
+            this.gageStyleB + "," +
+            this.gageStyleA / 255 + ")";
     },
-    clipOperation: function(composite) {
+    clipOperation: function (composite) {
+        /*jslint bitwise: true*/
         var scope = this;
-        return (OpenLayers.Raster.Operation.create(function(pixel, x, y) {
+        return (OpenLayers.Raster.Operation.create(function (pixel, x, y) {
             var value = pixel & 0x00ffffff;
             if (value >= scope.streamOrderClipValue && value < 0x00ffffff) {
                 scope.context.beginPath();
@@ -54,13 +59,13 @@ OpenLayers.Layer.GageRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
             }
         }))(composite);
     },
-    updateFromClipValue: function(cv) {
+    updateFromClipValue: function (cv) {
         this.streamOrderClipValue = cv;
         if (this.getVisibility()) {
             this.onDataUpdate();
         }
     },
-    updateVisibility: function() {
+    updateVisibility: function () {
         //            flowlineRasterWindow.setVisible(flowlineRaster.getVisibility());
     }
 });

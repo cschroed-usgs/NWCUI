@@ -1,3 +1,4 @@
+/*global OpenLayers*/
 /**
  * @requires OpenLayers/Layer/WMS.js
  */
@@ -10,7 +11,7 @@
  */
 OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     CLASS_NAME: "OpenLayers.Layer.FlowlinesData",
-    initialize: function(name, url, params, options) {
+    initialize: function (name, url, params, options) {
         params = params || {};
         options = options || {};
         params.layers = 'NHDPlusFlowlines:PlusFlowlineVAA_NHDPlus-StreamOrder';
