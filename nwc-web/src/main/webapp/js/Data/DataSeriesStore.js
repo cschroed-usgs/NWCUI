@@ -1,3 +1,4 @@
+/*global Ext,LOG,CONFIG,NWCUI,$ */
 Ext.ns('NWCUI.data');
 NWCUI.data.DataSeries = function () {
     return {

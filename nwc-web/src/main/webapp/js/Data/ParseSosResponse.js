@@ -1,3 +1,5 @@
+/*global Ext,LOG,CONFIG,NWCUI,$ */
+
 Ext.ns('NWCUI.data');
 /**
  * 

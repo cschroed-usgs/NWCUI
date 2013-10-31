@@ -194,7 +194,7 @@ NWCUI.data.StatsStore = Ext.extend(Ext.data.Store, {
                         currentTable.values.push(values);
                     } else if (/^[a-zA-Z_0-9]+$/.test(line)) {
                         //if it's a line describing a new table name
-                        
+                       
                         //ignore the case where the data string was terminated with a newline char
                         if (0 !== line.length) {
                             currentTable = {
