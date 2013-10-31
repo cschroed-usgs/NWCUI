@@ -1,3 +1,4 @@
+/*global Ext,LOG,CONFIG,NWCUI,$,GeoExt,OpenLayers,gxp,*/
 Ext.ns("NWCUI.ui");
 NWCUI.ui.ViewComboBoxMixin = function () {
     var self = this;
@@ -22,19 +23,22 @@ NWCUI.ui.ViewComboBoxMixin = function () {
             fields: ['viewId', 'displayText'],
             data: comboStoreData
         });
-        config = Ext.apply({
-            editable: false,
-            mode: 'local',
-            store: comboStore,
-            valueField: 'viewId',
-            displayField: 'displayText',
-            triggerAction: 'all',
-            forceSelection: true,
-            emptyText: win.defaultSeries.capitalize(),
-            listeners: {
-                select: handler
-            }
-        }, config);
+        config = Ext.apply(
+            {
+                editable: false,
+                mode: 'local',
+                store: comboStore,
+                valueField: 'viewId',
+                displayField: 'displayText',
+                triggerAction: 'all',
+                forceSelection: true,
+                emptyText: win.defaultSeries.capitalize(),
+                listeners: {
+                    select: handler
+                }
+            },
+            config
+        );
         NWCUI.ui.ViewComboBox.superclass.constructor.call(this, config);
         LOG.info('NWCUI.ui.ViewComboBox::constructor(): Construction complete.');
     };

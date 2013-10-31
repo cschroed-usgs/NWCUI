@@ -1,3 +1,4 @@
+/*global Ext,LOG,CONFIG,NWCUI,$,GeoExt,OpenLayers,gxp,*/
 OpenLayers.Control.WaterCensusToolbar = OpenLayers.Class(OpenLayers.Control.Panel, {
     /**
      * @param {Object} object an optional object whose properties will be used
@@ -53,7 +54,7 @@ OpenLayers.Control.HucSelectionTool = OpenLayers.Class(OpenLayers.Control, (func
 OpenLayers.Control.HucSelectionTool.underlyingControlId = 'hucs';
 OpenLayers.Control.HucSelectionTool.mapLayerId = 'huc-feature-layer';
 
-    
+
 OpenLayers.Control.BioSitesSelectionTool = OpenLayers.Class(OpenLayers.Control, (function () {
     var exports = {};
     exports.type = OpenLayers.Control.TYPE_TOOL;
