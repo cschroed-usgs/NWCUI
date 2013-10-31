@@ -20,7 +20,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
     },
     dynamicControls: {
         hucs: undefined,
-        bioDataSites: undefined,
+        bioDataSites: undefined
     },
     constructor: function(config) {
         var self = this;
