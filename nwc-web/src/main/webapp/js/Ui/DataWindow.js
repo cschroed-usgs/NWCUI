@@ -35,7 +35,6 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
                     }
                 )
             );
-//            self.toggleBar.doLayout();
         };
         config = Ext.apply(
             {
