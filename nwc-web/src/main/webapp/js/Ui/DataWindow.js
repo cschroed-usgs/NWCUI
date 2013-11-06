@@ -16,15 +16,26 @@ NWCUI.ui.DataWindow = Ext.extend(Ext.Window, {
         //attach the contained components so that they can be easily referenced later
         self.graphPanel = new NWCUI.ui.StatsGraphPanel();
         self.labelPanel = new NWCUI.ui.StatsLabelPanel();
-        var updateGraph = function (window) {
-            window = window || self;
-            var graphDiv = window.graphPanel.getEl().dom;
-            var legendDiv = window.labelPanel.getEl().dom;
+        var updateGraph = function (options) {
+            var dataWindow = self;
+            var graphDiv = dataWindow.graphPanel.getEl().dom;
+            var legendDiv = dataWindow.labelPanel.getEl().dom;
             var values = self.dataSeriesStore[self.defaultSeries].data;
             var labels = self.dataSeriesStore[self.defaultSeries].metadata.seriesLabels;
             var graph = new NWCUI.ui.Graph(graphDiv, legendDiv, values, labels);
-            window.doLayout();
+            dataWindow.doLayout();
             self.graphPanel.graph = graph;
+            var comboBox = self.toggleBar.findByType('viewComboBox')[0];
+
+            comboBox.destroy();
+            self.toggleBar.addItem(
+                new NWCUI.ui.ViewComboBox(
+                    {
+                        window: dataWindow
+                    }
+                )
+            );
+//            self.toggleBar.doLayout();
         };
         config = Ext.apply(
             {

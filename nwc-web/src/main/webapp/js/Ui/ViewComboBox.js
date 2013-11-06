@@ -44,3 +44,4 @@ NWCUI.ui.ViewComboBoxMixin = function () {
     };
 };
 NWCUI.ui.ViewComboBox = Ext.extend(Ext.form.ComboBox, new NWCUI.ui.ViewComboBoxMixin());
+Ext.reg('viewComboBox', NWCUI.ui.ViewComboBox);
