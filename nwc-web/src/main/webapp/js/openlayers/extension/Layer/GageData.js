@@ -1,3 +1,4 @@
+/*global OpenLayers*/
 /**
  * @requires OpenLayers/Layer/WMS.js
  */
@@ -25,7 +26,7 @@ OpenLayers.Layer.GageData = OpenLayers.Class(OpenLayers.Layer.WMS, {
         crossOriginKeyword: 'anonymous'
     },
     CLASS_NAME: "OpenLayers.Layer.GageData",
-    initialize: function(name, url, params, options) {
+    initialize: function (name, url, params, options) {
         params = params || {};
         options = options || {};
         params.layers = "glri:GageLoc";
@@ -42,7 +43,7 @@ OpenLayers.Layer.GageData = OpenLayers.Class(OpenLayers.Layer.WMS, {
         newArguments.push(name, url, params, options);
         OpenLayers.Layer.WMS.prototype.initialize.apply(this, newArguments);
     },
-    createGageStyle: function(args) {
+    createGageStyle: function (args) {
         var gageStyleA = args.a;
         var gageStyleR = args.r;
         var gageStyleG = args.g;

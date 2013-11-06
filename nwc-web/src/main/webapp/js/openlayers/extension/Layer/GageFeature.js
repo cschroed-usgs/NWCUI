@@ -1,3 +1,4 @@
+/*global OpenLayers*/
 /**
  * @requires OpenLayers/Layer/Vector.js
  */
@@ -39,7 +40,7 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
         renderers: ['DeclusterCanvas']
     }),
     CLASS_NAME: "OpenLayers.Layer.GageFeature",
-    initialize: function(name, options) {
+    initialize: function (name, options) {
         var newArguments = [];
         options = options || {};
         options.protocol = new OpenLayers.Protocol.WFS({
@@ -50,14 +51,14 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
         newArguments.push(name, options);
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, newArguments);
     },
-    updateGageStreamOrderFilter: function() {
+    updateGageStreamOrderFilter: function () {
         this.strategies[1].setFilter(new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
             property: "StreamOrde",
             value: this.streamOrderClipValue
         }));
     },
-    updateFromClipValue: function(cv) {
+    updateFromClipValue: function (cv) {
         this.streamOrderClipValue = cv;
         if (this.getVisibility()) {
             this.updateGageStreamOrderFilter();

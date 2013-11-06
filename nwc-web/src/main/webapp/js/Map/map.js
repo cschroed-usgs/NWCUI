@@ -196,7 +196,7 @@ NWCUI.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
                     var clipCount = 7;
                     var zoomLevels = CONFIG.mapPanel.map.getNumZoomLevels();
-                    panel.streamOrderClipValues = [zoomLevels];
+                    panel.streamOrderClipValues = new Array (zoomLevels);
                     var tableLength = panel.streamOrderClipValues.length;
                     var cInd;
                     for (cInd = 0; cInd < tableLength; cInd++) {

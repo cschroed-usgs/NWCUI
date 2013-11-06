@@ -1,6 +1,7 @@
+/*global Ext,LOG,CONFIG,NWCUI,$,GeoExt,OpenLayers,gxp*/
 Ext.ns("NWCUI.ui");
 
-NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
+NWCUI.ui.DataExportToolbar = Ext.extend(Ext.Toolbar, {
     constructor: function (config) {
         var self = this;
         var exportHandler = function (button, event) {
@@ -43,21 +44,21 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             {
                 xtype: 'button',
                 text: 'Add Water Use Data',
-                handler: function(button, event){
+                handler: function (button, event) {
                     button.disable();
                     var dataWindow = button.findParentByType('dataWindow');
                     var feature = dataWindow.feature;
-                    var countySelectedCallback = function(countyFeature){
+                    var countySelectedCallback = function (countyFeature) {
                         dataWindow.restore();
                         var offeringId = countyFeature.attributes.FIPS;
                         var sosUrl = NWCUI.data.buildSosUrlFromSource(offeringId, NWCUI.data.SosSources.countyWaterUse);
-                      
-                        var waterUseFailure = function(data, status, jqXHR){
+
+                        var waterUseFailure = function (data, status, jqXHR) {
                             NWCUI.ui.errorNotify(
-                                'An error occurred while retrieving water use data from:\n'+
-                                this.url + '\n' +
-                                'See browser logs for details'
-                                );
+                                'An error occurred while retrieving water use data from:\n' +
+                                    this.url + '\n' +
+                                    'See browser logs for details'
+                            );
                             LOG.error('Error while accessing: ' + this.url + '\n' + data);
                         };
 
@@ -69,14 +70,13 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                     data.documentElement.textContent.has('exception') //xmlDocument with an exception message
                                     ) {
                                 waterUseFailure.apply(this, arguments);
-                            }
-                            else {
+                            } else {
                                 var parsedTable = NWCUI.data.parseSosResponse(data);
                                 var countyAreaSqMiles = countyFeature.attributes.AREA_SQMI;
                                 var countyAreaAcres = NWCUI.data.convert.squareMilesToAcres(countyAreaSqMiles);
                                 var convertedTable = NWCUI.data.convert.mgdTableToMmPerDayTable(parsedTable, countyAreaAcres);
                                 //add a summation series to the table
-                                convertedTable = convertedTable.map(function(row){
+                                convertedTable = convertedTable.map(function (row) {
                                     var nonDateValues = row.from(1);//don't try to sum dates
                                     var rowSum = nonDateValues.sum();
                                     var newRow = row.clone();//shallow array copy
@@ -85,13 +85,13 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                                 });
                                 var waterUseDataSeries = new NWCUI.data.DataSeries();
                                 waterUseDataSeries.data = convertedTable;
-                                
+
                                 //use the series metadata as labels
                                 var additionalSeriesLabels = NWCUI.data.SosSources.countyWaterUse.observedProperty.split(',');
                                 additionalSeriesLabels.push('Aggregate Water Use');
                                 var waterUseValueLabelsOnly = waterUseDataSeries.metadata.seriesLabels.from(1);//skip the initial 'Date' label
                                 waterUseDataSeries.metadata.seriesLabels = waterUseValueLabelsOnly.concat(additionalSeriesLabels);
-                                
+
                                 dataWindow.dataSeriesStore.updateWaterUseSeries(waterUseDataSeries);
                                 dataWindow.expand();
                                 dataWindow.updateGraph(dataWindow);
@@ -121,10 +121,13 @@ NWCUI.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 rawValueKey: 'dayMet'//used in handler
             }
         ];
-        
-        config = Ext.apply({
-            items : items
-        }, config);
+
+        config = Ext.apply(
+            {
+                items: items
+            },
+            config
+        );
 
         NWCUI.ui.DataExportToolbar.superclass.constructor.call(this, config);
         LOG.info('NWCUI.ui.DataExportToolbar::constructor(): Construction complete.');
